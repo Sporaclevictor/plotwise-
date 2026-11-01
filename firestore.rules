@@ -1,0 +1,49 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function me() { return get(/databases/$(database)/documents/users/$(request.auth.uid)).data; }
+    function isAdmin() { return signedIn() && me().role == 'admin'; }
+    function isActive() { return signedIn() && me().status == 'active'; }
+
+    // Public pricing and plan limits (shown on the landing page)
+    match /settings/public {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    // Bank / account details: only signed-in users can see them
+    match /settings/payment {
+      allow read: if signedIn();
+      allow write: if isAdmin();
+    }
+
+    match /users/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+      allow create: if signedIn() && request.auth.uid == uid
+        && request.resource.data.role == 'user'
+        && request.resource.data.plan == 'free'
+        && request.resource.data.status == 'active'
+        && request.resource.data.planExpiry == null;
+      // Users may only edit their own name/phone. Plan, role and status are admin-only.
+      allow update: if isAdmin() || (signedIn() && request.auth.uid == uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'phone']));
+      allow delete: if false;
+
+      // Projects and everything inside them (boq, procurement, photos)
+      match /projects/{document=**} {
+        allow read: if signedIn() && (request.auth.uid == uid || isAdmin());
+        allow write: if signedIn() && request.auth.uid == uid && isActive();
+      }
+    }
+
+    match /payments/{id} {
+      allow read: if signedIn() && (resource.data.uid == request.auth.uid || isAdmin());
+      allow create: if isActive()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.status == 'pending';
+      allow update: if isAdmin();
+      allow delete: if false;
+    }
+  }
+}
