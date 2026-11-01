@@ -1,0 +1,1289 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Plotwise: survey, plan and build with confidence</title>
+<meta name="description" content="Draw building plans, record measurements and rates, estimate materials, track progress with photos and measure site risk.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#10253A;--ink2:#1B3A57;--paper:#F3F6F8;--card:#fff;--line:#CBD5DC;--orange:#F26A1B;--orange-d:#C9520D;--soil:#7B5B3A;--steel:#5A6E80;--ok:#2E8B57;--warn:#C98F0A;--bad:#C23B2E}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font:16px/1.55 'IBM Plex Sans',system-ui,sans-serif;color:var(--ink);background:var(--paper);min-height:100vh;display:flex;flex-direction:column}
+h1,h2,h3{font-family:'Barlow Condensed',sans-serif;line-height:1.05;margin:0 0 .4em;font-weight:700}
+h1{font-size:clamp(2.6rem,7vw,4.6rem)}
+h2{font-size:clamp(1.8rem,4vw,2.4rem)}
+h3{font-size:1.4rem;font-weight:600}
+p{margin:0 0 1em}
+a{color:var(--ink2)}
+.muted{color:var(--steel)}
+.wrap{width:min(1120px,100% - 2rem);margin-inline:auto}
+:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.hidden{display:none!important}
+button,input,select,textarea{font:inherit;color:inherit}
+.btn{display:inline-block;border:2px solid var(--ink);background:var(--orange);color:var(--ink);padding:.55rem 1.1rem;border-radius:4px;font-weight:600;cursor:pointer;text-decoration:none}
+.btn:hover{background:#ff7d33}
+.btn.ghost{background:transparent}
+.btn.ghost:hover{background:rgba(16,37,58,.08)}
+.btn.sm{padding:.25rem .65rem;font-size:.9rem}
+.btn.danger{background:#fff;border-color:var(--bad);color:var(--bad)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.link{background:none;border:0;padding:0;color:var(--ink2);text-decoration:underline;cursor:pointer}
+label{display:block;font-size:.9rem;font-weight:500;margin-bottom:.8rem}
+input,select,textarea{display:block;width:100%;margin-top:.25rem;padding:.5rem .6rem;border:1px solid var(--line);border-radius:4px;background:#fff}
+input[type=range]{padding:0;accent-color:var(--orange)}
+input[type=checkbox]{display:inline-block;width:auto;margin:0 .4rem 0 0}
+.row{display:grid;gap:.8rem;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:1.2rem}
+.chip{display:inline-block;font-size:.8rem;font-weight:600;padding:.1rem .55rem;border-radius:99px;background:#E3EAF0}
+.chip.ok{background:#DDF1E6;color:#1d6a41}.chip.warn{background:#FBEFCB;color:#7a5600}.chip.bad{background:#F8DAD6;color:#8e271d}.chip.pro{background:var(--orange);color:var(--ink)}
+
+/* landing */
+.hero{background:var(--ink);color:#fff;background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);background-size:32px 32px;padding:2.5rem 0 3.5rem}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:2.5rem}
+.brand{font-family:'Barlow Condensed';font-weight:700;font-size:1.7rem;letter-spacing:.5px;color:#fff;text-decoration:none}
+.brand b{color:var(--orange)}
+.herogrid{display:grid;gap:2.5rem;grid-template-columns:1.3fr 1fr;align-items:start}
+.hero p.lead{font-size:1.15rem;max-width:34rem;color:#D3DEE8}
+.plansvg{width:100%;max-width:520px;margin-top:1.5rem}
+.plansvg .draw{fill:none;stroke:var(--orange);stroke-width:2.5;stroke-dasharray:1;stroke-dashoffset:1;animation:draw 2.6s ease-out forwards}
+.plansvg .dim{stroke:#9fb4c6;stroke-width:1.2;fill:none;stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.4s 2s ease-out forwards}
+.plansvg text{fill:#D3DEE8;font:600 13px 'Barlow Condensed';opacity:0;animation:fade .6s 3s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}@keyframes fade{to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.plansvg .draw,.plansvg .dim{animation:none;stroke-dashoffset:0}.plansvg text{animation:none;opacity:1}}
+.authcard{background:#fff;color:var(--ink);border-radius:6px;padding:1.4rem}
+.authtabs{display:flex;gap:1rem;margin-bottom:1rem;border-bottom:1px solid var(--line)}
+.authtabs button{background:none;border:0;padding:.4rem 0;font-weight:600;color:var(--steel);cursor:pointer;border-bottom:3px solid transparent}
+.authtabs button[aria-selected=true]{color:var(--ink);border-color:var(--orange)}
+section.block{padding:3.5rem 0}
+.feat{display:grid;gap:1.5rem 3rem;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.feat h3{margin-bottom:.15em}
+.pricing{display:grid;gap:1.2rem;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));align-items:stretch}
+.pricing ul{padding-left:1.1rem;margin:.6rem 0 0}
+.price{font:700 2.8rem 'Barlow Condensed'}
+.price small{font:500 1rem 'IBM Plex Sans';color:var(--steel)}
+
+/* app */
+.apphead{background:var(--ink);color:#fff}
+.apphead .wrap{display:flex;flex-wrap:wrap;gap:.6rem 1rem;align-items:center;justify-content:space-between;padding:.7rem 0}
+.apphead nav{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.apphead .btn{border-color:#fff;color:#fff;background:transparent}
+.apphead .btn.pro{background:var(--orange);color:var(--ink);border-color:var(--orange)}
+main.wrap{padding:1.5rem 0 3rem;flex:1}
+.tabs{display:flex;gap:.2rem;overflow-x:auto;border-bottom:2px solid var(--line);margin:.8rem 0 1.2rem}
+.tabs button{background:none;border:0;padding:.6rem .9rem;font-weight:600;color:var(--steel);cursor:pointer;white-space:nowrap;border-bottom:4px solid transparent;margin-bottom:-2px}
+.tabs button[aria-selected=true]{color:var(--ink);border-color:var(--orange)}
+.phead{display:flex;flex-wrap:wrap;gap:.4rem 1rem;align-items:baseline}
+.phead h2{margin:0}
+.bar{height:10px;background:#E3EAF0;border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--orange)}
+.stats{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:1rem}
+.stat b{display:block;font:700 2.3rem/1 'Barlow Condensed'}
+.plist{list-style:none;margin:0;padding:0}
+.plist li{display:grid;gap:.6rem 1rem;grid-template-columns:2fr 1.2fr auto;align-items:center;padding:.9rem 0;border-bottom:1px solid var(--line)}
+@media(max-width:640px){.plist li{grid-template-columns:1fr}.herogrid{grid-template-columns:1fr}}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{padding:.45rem .5rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+th{font-weight:600;color:var(--steel);font-size:.85rem}
+td input,td select{margin:0;padding:.3rem .4rem;min-width:70px}
+.tw{overflow-x:auto}
+td.num,th.num{text-align:right}
+canvas#cv{display:block;background:#fff;max-width:none}
+.planlay{display:grid;gap:1rem;grid-template-columns:minmax(0,1fr)}
+@media(min-width:900px){.planlay{grid-template-columns:minmax(0,1.7fr) minmax(300px,1fr)}}
+.gauge{height:14px;border-radius:99px;background:linear-gradient(90deg,var(--ok),var(--warn) 50%,var(--bad));position:relative;margin:.8rem 0}
+.gauge i{position:absolute;top:-5px;width:6px;height:24px;background:var(--ink);border-radius:3px;transform:translateX(-3px)}
+.gallery{display:grid;gap:.8rem;grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.gallery figure{margin:0;background:#fff;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.gallery img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+.gallery figcaption{padding:.5rem .7rem;font-size:.9rem}
+.cols2{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.stage{display:grid;grid-template-columns:1fr 3rem;gap:.2rem .8rem;align-items:center;margin-bottom:.9rem}
+.stage span{grid-column:1/-1;font-weight:500;font-size:.95rem}
+.stage output{font-weight:700;text-align:right}
+.tips{margin:0;padding-left:1.1rem}
+.tips li{margin-bottom:.4rem}
+footer.site{background:var(--ink);color:#B9C8D6;text-align:center;padding:1.1rem 1rem;font-size:.95rem}
+footer.site b{color:#fff}
+dialog{border:0;border-radius:8px;padding:1.4rem;width:min(520px,94vw);max-height:90vh}
+dialog::backdrop{background:rgba(16,37,58,.6)}
+#toast{position:fixed;left:50%;bottom:1.4rem;transform:translateX(-50%);background:var(--ink);color:#fff;padding:.7rem 1.1rem;border-radius:6px;max-width:92vw;z-index:50;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.show{opacity:1}#toast.bad{background:var(--bad)}
+.center{min-height:60vh;display:grid;place-items:center;text-align:center;padding:2rem}
+.curlist{list-style:none;padding:0;margin:.4rem 0 .8rem}
+.curlist li{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;padding:.4rem 0;border-bottom:1px solid var(--line)}
+</style>
+<script>
+/* Startup watchdog: if the app never boots, show why instead of "Loading" forever */
+(function () {
+  var errs = [];
+  window.addEventListener('error', function (e) {
+    var t = e.target;
+    if (t && t !== window && (t.src || t.href)) errs.push('Could not load: ' + (t.src || t.href));
+    else errs.push((e.message || 'Script error') + (e.filename ? ' (' + e.filename.split('/').slice(-1)[0] + ':' + e.lineno + ')' : ''));
+  }, true);
+  window.addEventListener('unhandledrejection', function (e) { errs.push('Unhandled: ' + ((e.reason && e.reason.message) || e.reason)); });
+  setTimeout(function () {
+    if (window.__pwBooted) return;
+    var el = document.getElementById('v-loading'); if (!el || el.classList.contains('hidden')) return;
+    var safe = function (x) { return String(x).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); };
+    el.innerHTML = '<div><h2>Plotwise could not start</h2><p class="muted">Check your internet connection and reload. If this keeps happening, send the message below to your developer.</p>' +
+      '<pre style="text-align:left;white-space:pre-wrap;word-break:break-word;background:#fff;border:1px solid #CBD5DC;border-radius:6px;padding:.7rem;font-size:.8rem;max-width:92vw">' +
+      safe(errs.join('\n') || 'No error was captured. The Firebase scripts may be blocked, or the Firebase library versions in this file do not match.') +
+      '</pre><button class="btn" onclick="location.reload()">Reload</button></div>';
+  }, 8000);
+})();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js" defer></script>
+</head>
+<body>
+
+<!-- LANDING -->
+<div id="v-landing" class="hidden">
+  <header class="hero">
+    <div class="wrap">
+      <div class="topbar"><a class="brand" href="#">Plot<b>wise</b></a><a class="btn ghost" style="color:#fff;border-color:#fff" href="#pricing">Pricing</a></div>
+      <div class="herogrid">
+        <div>
+          <h1>Measure it. Price it. Build it right.</h1>
+          <p class="lead">Draw your building plan, record measurements and rates, work out bricks and cement, and see the risk in your soil before the first trench is dug.</p>
+          <svg class="plansvg" viewBox="0 0 420 250" role="img" aria-label="Animated floor plan with dimensions">
+            <path class="draw" pathLength="1" d="M30 40H330V200H30Z"/>
+            <path class="draw" pathLength="1" d="M180 40V130H330M30 130H110M110 130V200"/>
+            <path class="dim" pathLength="1" d="M30 18H330M30 12V24M330 12V24"/>
+            <path class="dim" pathLength="1" d="M356 40V200M350 40H362M350 200H362"/>
+            <text x="165" y="12">12.0 m</text><text x="364" y="124">8.5 m</text>
+          </svg>
+        </div>
+        <div class="authcard">
+          <div class="authtabs" role="tablist">
+            <button role="tab" aria-selected="true" data-act="authtab" data-t="in">Sign in</button>
+            <button role="tab" aria-selected="false" data-act="authtab" data-t="up">Create account</button>
+          </div>
+          <form data-form="signin" id="f-in">
+            <label>Email<input name="email" type="email" autocomplete="email" required></label>
+            <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
+            <button class="btn" type="submit">Sign in</button>
+            <button class="link" type="button" data-act="reset" style="margin-left:.8rem">Forgot password</button>
+          </form>
+          <form data-form="signup" id="f-up" class="hidden">
+            <label>Full name<input name="name" autocomplete="name" required></label>
+            <label>Email<input name="email" type="email" autocomplete="email" required></label>
+            <label>Password (6 characters or more)<input name="password" type="password" minlength="6" autocomplete="new-password" required></label>
+            <button class="btn" type="submit">Start free</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="block"><div class="wrap">
+    <h2>Everything a site needs, in one place</h2>
+    <div class="feat">
+      <div><h3>Plan drawing</h3><p class="muted">Sketch rooms on a metric grid. Areas and wall lengths update as you draw.</p></div>
+      <div><h3>Measurements and rates</h3><p class="muted">Keep a bill of quantities with editable quantities and unit rates and a running total against budget.</p></div>
+      <div><h3>Materials estimator</h3><p class="muted">Blocks, cement bags, sand, granite and rebar from your wall and slab sizes, with quality checks for each.</p></div>
+      <div><h3>Procurement tracking</h3><p class="muted">Compare what you need with what has been delivered and record whether it passed inspection.</p></div>
+      <div><h3>Soil and risk</h3><p class="muted">Choose the soil, water table and slope. Get foundation advice and a live risk score.</p></div>
+      <div><h3>Progress with photos</h3><p class="muted">Update each build stage, upload site and land photos, and keep a dated visual record.</p></div>
+    </div>
+  </div></section>
+
+  <section class="block" id="pricing" style="background:#E8EEF2"><div class="wrap">
+    <h2>Free or premium</h2>
+    <div class="pricing" id="pricing-cards"></div>
+  </div></section>
+</div>
+
+<!-- SUSPENDED -->
+<div id="v-suspended" class="hidden center">
+  <div><h2>Account suspended</h2><p class="muted">Your account has been suspended by an administrator. Contact support to restore access.</p><button class="btn" data-act="signout">Sign out</button></div>
+</div>
+
+<!-- LOADING -->
+<div id="v-loading" class="center"><p class="muted">Loading Plotwise...</p></div>
+
+<!-- APP -->
+<div id="v-app" class="hidden" style="display:flex;flex-direction:column;flex:1">
+  <header class="apphead"><div class="wrap">
+    <a class="brand" href="#" data-act="home">Plot<b>wise</b></a>
+    <nav>
+      <span id="planchip" class="chip"></span>
+      <button class="btn sm" data-act="home">Projects</button>
+      <button class="btn sm pro" data-act="upgrade" id="upbtn">Go premium</button>
+      <button class="btn sm hidden" data-act="admin" id="adminbtn">Admin</button>
+      <button class="btn sm" data-act="signout">Sign out</button>
+    </nav>
+  </div></header>
+  <main class="wrap" id="main"></main>
+</div>
+
+<footer class="site">Powered by <b>Step By Step Digital</b></footer>
+<dialog id="dlg"></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, setDoc, addDoc, updateDoc, deleteDoc, getDocs, collection, query, where, orderBy, onSnapshot, serverTimestamp, writeBatch, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+/* ============ 1. PASTE YOUR FIREBASE WEB APP CONFIG HERE ============ */
+const firebaseConfig = {
+  apiKey: "AIzaSyD9IK2Pdn-dn6E_oj40hXjOxkiHJtkrZkM",
+  authDomain: "plotwise-3acf0.firebaseapp.com",
+  projectId: "plotwise-3acf0",
+  storageBucket: "plotwise-3acf0.firebasestorage.app",
+  messagingSenderId: "946241196301",
+  appId: "1:946241196301:web:9b10dfdd8a367f81aee044"
+};
+/* ==================================================================== */
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app), db = getFirestore(app), storage = getStorage(app);
+
+/* ---------- helpers ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const num = v => { const n = parseFloat(v); return isFinite(n) ? n : 0; };
+const fmt = n => Number(n || 0).toLocaleString(undefined, { maximumFractionDigits: 2 });
+const curList = () => S.settings.currencies;
+const curOf = code => curList().find(c => c.code === code) || curList()[0];
+const symOf = code => curOf(code).symbol;
+const projCur = () => S.project?.currency || curList()[0].code;
+const money = (n, code) => `${symOf(code || projCur())}${fmt(n)}`;
+const dstr = t => t?.toDate ? t.toDate().toLocaleDateString() : '';
+let toastT;
+function toast(msg, bad) { const t = $('#toast'); t.textContent = msg; t.className = 'show' + (bad ? ' bad' : ''); clearTimeout(toastT); toastT = setTimeout(() => t.className = '', 3800); }
+function friendly(e) {
+  const m = { 'auth/invalid-credential': 'Email or password is incorrect.', 'auth/email-already-in-use': 'That email already has an account. Sign in instead.', 'auth/weak-password': 'Use a password with at least 6 characters.', 'auth/too-many-requests': 'Too many attempts. Wait a few minutes and try again.', 'permission-denied': 'You do not have permission to do that.' };
+  return m[e.code] || e.message || 'Something went wrong. Try again.';
+}
+function modal(html) { const d = $('#dlg'); d.innerHTML = html; d.showModal(); }
+function closeModal() { $('#dlg').close(); }
+function show(id) { ['landing', 'suspended', 'loading', 'app'].forEach(v => { const e = $('#v-' + v); e.classList.toggle('hidden', v !== id); if (v === 'app') e.style.display = v === id ? 'flex' : 'none'; }); }
+
+/* ---------- constants ---------- */
+const DEFAULTS = { currencies: [{ code: 'NGN', symbol: '₦', monthly: 7500, yearly: 75000 }, { code: 'USD', symbol: '$', monthly: 5, yearly: 50 }], limits: { projects: 1, rooms: 3, boq: 10, proc: 10, photos: 5 } };
+const S = { user: null, profile: null, settings: structuredClone(DEFAULTS), payment: {}, projects: [], projectId: null, project: null, boq: [], proc: [], photos: [], tab: 'overview', plan: null, admin: null, adminTab: 'overview', unsubs: [], pUnsubs: [], wasPrem: null };
+
+const STAGES = [
+  { k: 'setout', n: 'Site clearing and setting out', w: 5 }, { k: 'found', n: 'Foundation', w: 15 }, { k: 'sub', n: 'Substructure and DPC', w: 10 },
+  { k: 'walls', n: 'Walling and columns', w: 20 }, { k: 'roof', n: 'Roofing', w: 15 }, { k: 'mep', n: 'Electrical and plumbing', w: 10 },
+  { k: 'finish', n: 'Plastering and finishes', w: 20 }, { k: 'ext', n: 'External works', w: 5 }
+];
+const SOILS = {
+  clay: { n: 'Clay', base: 25, bearing: '50 to 150 kPa, depending on stiffness', found: 'Reinforced strip footings or a raft, founded below the zone of seasonal moisture change (often 1.2 m or deeper).',
+    risks: ['Swelling in the wet season and shrinking in the dry season can crack walls and floors.', 'Poor drainage softens the soil quickly.'],
+    actions: ['Carry rainwater well away from the building with drains and apron paving.', 'Keep large trees away from the foundation.', 'Use a reinforced ground beam and avoid isolated shallow pads.', 'Order a soil test if the clay is soft, fissured or very sticky.'],
+    mats: ['Use a well-compacted hardcore blinding under the slab.', 'Choose a 1:2:4 mix or richer for footings and ground beams.', 'Provide a damp-proof membrane under the floor slab.'] },
+  sand: { n: 'Sandy soil', base: 15, bearing: '100 to 300 kPa when compacted', found: 'Strip or pad footings on well-compacted sand, 0.9 to 1.2 m deep.',
+    risks: ['Loose sand can settle unevenly.', 'Running water can wash sand out from under footings (scour).'],
+    actions: ['Compact the trench bottom and any fill in layers of about 150 mm.', 'Keep excavations from collapsing: shore or slope the sides.', 'Control surface water around the footings.'],
+    mats: ['Use clean, sharp concrete sand and avoid very fine beach sand.', 'Allow extra cement for blinding at the trench bottom if it stays loose.'] },
+  silt: { n: 'Silty soil', base: 20, bearing: '75 to 150 kPa', found: 'Strip footings or a raft with good drainage. Avoid placing foundations on soft, wet silt.',
+    risks: ['Loses strength fast when wet.', 'Can settle over time under load.'],
+    actions: ['Drain the plot before and during construction.', 'Remove soft pockets and replace with compacted hardcore.', 'Prefer a raft or wide strip footings to spread the load.'],
+    mats: ['Use hardcore or crushed stone blinding.', 'Provide a damp-proof membrane and DPC.'] },
+  loam: { n: 'Loam', base: 8, bearing: '100 to 200 kPa', found: 'Standard strip footings, 0.9 to 1.2 m deep.',
+    risks: ['Surface layers may be soft or organic.', 'Can hold water after heavy rain.'],
+    actions: ['Strip topsoil and organic matter before setting out.', 'Found on firm subsoil below the topsoil layer.'],
+    mats: ['A 1:2:4 footing mix is usually sufficient for light structures.'] },
+  laterite: { n: 'Laterite or gravel', base: 8, bearing: '150 to 400 kPa', found: 'Strip or pad footings on firm laterite, usually 0.6 to 1.0 m deep.',
+    risks: ['Soft or clayey pockets can hide inside otherwise firm ground.', 'Surface may be uneven.'],
+    actions: ['Inspect the full trench bottom and dig out soft pockets.', 'Backfill with compacted laterite or hardcore, not loose soil.'],
+    mats: ['A 1:3:6 mix can serve for lean concrete blinding. Use 1:2:4 for structural footings.'] },
+  rock: { n: 'Rock', base: 5, bearing: '500 kPa or more', found: 'Shallow footings on clean, level or stepped rock. Anchor with dowels on sloping rock.',
+    risks: ['Excavation is slow and costly.', 'Fractured rock may need inspection by an engineer.'],
+    actions: ['Clean off loose and weathered rock before casting.', 'Step the footings on sloped rock rather than casting a tall wedge.'],
+    mats: ['Plan for breaker or blasting costs in the BOQ.', 'Use dowel bars to tie columns to the rock where required.'] },
+  peat: { n: 'Peat or black cotton soil', base: 40, bearing: 'Below 50 kPa, often unreliable', found: 'Avoid direct foundations. Remove and replace the soft layer, or use piles or a deep raft designed by an engineer.',
+    risks: ['Very high settlement and movement.', 'Severe cracking in unreinforced structures.'],
+    actions: ['Get a geotechnical investigation before buying materials.', 'Budget extra for soil replacement or piling.', 'Get a structural engineer to design the foundation.'],
+    mats: ['Plan for imported granular fill and extra reinforcement.'] }
+};
+const LIMITNAMES = { projects: 'projects', rooms: 'rooms per plan', boq: 'measurement items', proc: 'procurement items', photos: 'photos per project' };
+
+/* ---------- plan helpers ---------- */
+const prem = () => !!S.profile && (S.profile.role === 'admin' || (S.profile.plan === 'premium' && S.profile.planExpiry?.toMillis && S.profile.planExpiry.toMillis() > Date.now()));
+const limitOf = k => prem() ? Infinity : S.settings.limits[k];
+function gate(k, count) {
+  if (count < limitOf(k)) return true;
+  toast(`The free plan allows ${S.settings.limits[k]} ${LIMITNAMES[k]}. Upgrade to add more.`, true);
+  return false;
+}
+const pref = () => doc(db, 'users', S.user.uid, 'projects', S.projectId);
+const sub = n => collection(db, 'users', S.user.uid, 'projects', S.projectId, n);
+
+/* ---------- calculations ---------- */
+const progressOf = p => STAGES.reduce((a, s) => a + s.w * ((p?.stages?.[s.k]) || 0) / 100, 0);
+const boqTotal = () => S.boq.reduce((a, r) => a + (r.amount || 0), 0);
+function riskOf(p) {
+  const f = []; let s = 0; const add = (pts, txt) => { if (pts > 0) { s += pts; f.push({ pts, txt }); } };
+  const soil = SOILS[p.soil]; if (soil) add(soil.base, soil.n);
+  add({ high: 20, medium: 10 }[p.water] || 0, `Water table is ${p.water}`);
+  add({ steep: 15, moderate: 7 }[p.slope] || 0, `${p.slope === 'steep' ? 'Steep' : 'Moderate'} slope`);
+  if (p.flood === 'yes') add(15, 'Plot is flood-prone');
+  const b = num(p.budget), t = boqTotal();
+  if (b > 0 && t > b) add(Math.min(20, Math.round((t - b) / b * 100 / 2)), `Estimated cost is ${Math.round((t - b) / b * 100)}% over budget`);
+  if (p.startDate && p.endDate) {
+    const a = new Date(p.startDate).getTime(), z = new Date(p.endDate).getTime();
+    if (z > a) { const exp = Math.min(1, Math.max(0, (Date.now() - a) / (z - a))) * 100; const lag = exp - progressOf(p); if (lag > 10) add(Math.min(15, Math.round(lag / 3)), `Behind schedule by about ${Math.round(lag)} points`); }
+  }
+  s = Math.min(100, s);
+  return { score: s, level: s < 30 ? 'Low' : s < 55 ? 'Moderate' : 'High', cls: s < 30 ? 'ok' : s < 55 ? 'warn' : 'bad', factors: f };
+}
+function estimate(i) {
+  const w = 1 + i.waste / 100;
+  const wallArea = Math.max(0, i.wallLen * i.wallH - i.openings);
+  const blocks = Math.ceil(wallArea * 9.25 * w);
+  const mortarDry = wallArea * (i.blockT == 225 ? 0.028 : 0.019) * 1.33;
+  const mCem = mortarDry / 7, mSand = mortarDry * 6 / 7;
+  const conc = i.slabArea * i.slabT + i.foundVol;
+  const [a, b, c] = i.mix.split(':').map(Number), t = a + b + c, dry = conc * 1.54;
+  const cCem = dry * a / t, cSand = dry * b / t, cAgg = dry * c / t;
+  return { wallArea, conc, blocks, cement: Math.ceil((mCem + cCem) * 28.8 * w), sand: (mSand + cSand) * w, granite: cAgg * w, rebar: Math.ceil(conc * i.rebar * w) };
+}
+
+/* ---------- storage helpers ---------- */
+async function compress(file, max = 1600, q = .8) {
+  if (!file.type.startsWith('image/')) return file;
+  try {
+    const bmp = await createImageBitmap(file); const k = Math.min(1, max / Math.max(bmp.width, bmp.height));
+    const cv = document.createElement('canvas'); cv.width = Math.round(bmp.width * k); cv.height = Math.round(bmp.height * k);
+    cv.getContext('2d').drawImage(bmp, 0, 0, cv.width, cv.height);
+    return await new Promise(r => cv.toBlob(b => r(b || file), 'image/jpeg', q));
+  } catch { return file; }
+}
+async function toDataUrl(file, maxBytes = 350000) {
+  if (!file.type.startsWith('image/')) throw new Error('Please choose an image file (JPG or PNG).');
+  let bmp; try { bmp = await createImageBitmap(file); } catch { throw new Error('Could not read that image. Use a JPG or PNG photo.'); }
+  let max = 1100, q = .72;
+  for (let i = 0; i < 6; i++) {
+    const k = Math.min(1, max / Math.max(bmp.width, bmp.height));
+    const cv = document.createElement('canvas'); cv.width = Math.round(bmp.width * k); cv.height = Math.round(bmp.height * k);
+    cv.getContext('2d').drawImage(bmp, 0, 0, cv.width, cv.height);
+    const blob = await new Promise(r => cv.toBlob(r, 'image/jpeg', q));
+    if (blob && blob.size <= maxBytes) return await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(blob); });
+    max *= .8; q = Math.max(.45, q - .06);
+  }
+  throw new Error('That image is too large to store. Try a smaller photo.');
+}
+function upload(path, blob, onProg) {
+  return new Promise((res, rej) => {
+    const t = uploadBytesResumable(ref(storage, path), blob, { contentType: blob.type || 'image/jpeg' });
+    t.on('state_changed', s => onProg?.(Math.round(s.bytesTransferred / s.totalBytes * 100)), rej, async () => res({ url: await getDownloadURL(t.snapshot.ref), path }));
+  });
+}
+
+/* ============ AUTH & BOOT ============ */
+let unsubProfile = null, unsubSettings = null, unsubPay = null, healT = null;
+function showError(e) {
+  show('loading');
+  $('#v-loading').innerHTML = `<div><h2>We could not load your account</h2><p class="muted">${esc(friendly(e))}</p><p class="muted">If this mentions permissions, publish the latest Firestore rules and try again.</p><button class="btn" data-act="signout">Sign out</button></div>`;
+}
+unsubSettings = onSnapshot(doc(db, 'settings', 'public'), s => {
+  const d = s.exists() ? s.data() : {};
+  S.settings = { ...DEFAULTS, ...d, currencies: (Array.isArray(d.currencies) && d.currencies.length) ? d.currencies : DEFAULTS.currencies, limits: { ...DEFAULTS.limits, ...(d.limits || {}) } };
+  renderPricing(); if (S.user) updateHeader();
+}, () => { renderPricing(); });
+
+onAuthStateChanged(auth, user => {
+  window.__pwBooted = true;
+  unsubProfile?.(); unsubPay?.(); S.profile = null; S.wasPrem = null;
+  if (!user) { S.user = null; closeProject(); S.admin = null; show('landing'); return; }
+  S.user = user; clearTimeout(healT); $('#v-loading').innerHTML = '<p class="muted">Loading Plotwise...</p>'; show('loading');
+  unsubPay = onSnapshot(doc(db, 'settings', 'payment'), s => { S.payment = s.exists() ? s.data() : {}; }, () => { });
+  unsubProfile = onSnapshot(doc(db, 'users', user.uid), s => {
+    if (!s.exists()) { // sign-up write may still be in flight; if the profile never appears, create it
+      clearTimeout(healT);
+      healT = setTimeout(async () => {
+        if (S.profile || auth.currentUser?.uid !== user.uid) return;
+        try { await setDoc(doc(db, 'users', user.uid), { name: user.displayName || (user.email || '').split('@')[0], email: user.email, role: 'user', plan: 'free', status: 'active', planExpiry: null, createdAt: serverTimestamp() }); } catch (e) { showError(e); }
+      }, 2500);
+      return;
+    }
+    clearTimeout(healT);
+    S.profile = { id: s.id, ...s.data() };
+    if (S.profile.status === 'suspended') { show('suspended'); return; }
+    const first = S.wasPrem === null, p = prem();
+    show('app'); updateHeader();
+    if (first) { S.projectId ? 0 : (S.admin = null, renderDashboard(), watchProjects()); }
+    else if (p !== S.wasPrem) { S.projectId ? renderTab(true) : !S.admin && route(); }
+    S.wasPrem = p;
+  }, e => showError(e));
+});
+
+function updateHeader() {
+  const p = S.profile; if (!p) return;
+  const c = $('#planchip');
+  if (p.role === 'admin') { c.textContent = 'Admin'; c.className = 'chip pro'; }
+  else if (prem()) { c.textContent = `Premium until ${dstr(p.planExpiry)}`; c.className = 'chip pro'; }
+  else { c.textContent = 'Free plan'; c.className = 'chip'; }
+  $('#upbtn').classList.toggle('hidden', prem());
+  $('#adminbtn').classList.toggle('hidden', p.role !== 'admin');
+}
+function watchProjects() {
+  S.unsubs.forEach(u => u()); S.unsubs = [];
+  S.unsubs.push(onSnapshot(query(collection(db, 'users', S.user.uid, 'projects'), orderBy('createdAt', 'desc')), s => {
+    S.projects = s.docs.map(d => ({ id: d.id, ...d.data() }));
+    if (!S.projectId && !S.admin && $('#plist-host')) renderDashboard();
+  }));
+}
+function route() { if (S.admin) return renderAdmin(); S.projectId ? renderProject() : renderDashboard(); }
+
+/* ============ DELEGATED EVENTS ============ */
+const acts = {}, forms = {}, changes = {}, inputs = {};
+document.addEventListener('click', e => { const b = e.target.closest('[data-act]'); if (b) { e.preventDefault?.(); acts[b.dataset.act]?.(b.dataset, b); } });
+document.addEventListener('submit', e => { const f = e.target.closest('[data-form]'); if (f) { e.preventDefault(); forms[f.dataset.form]?.(f); } });
+document.addEventListener('change', e => { const t = e.target.closest('[data-change]'); if (t) changes[t.dataset.change]?.(t, t.dataset); });
+document.addEventListener('input', e => { const t = e.target.closest('[data-input]'); if (t) inputs[t.dataset.input]?.(t, t.dataset); });
+
+acts.authtab = d => { $$('.authtabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.t === d.t)); $('#f-in').classList.toggle('hidden', d.t !== 'in'); $('#f-up').classList.toggle('hidden', d.t !== 'up'); };
+forms.signin = async f => { try { await signInWithEmailAndPassword(auth, f.email.value.trim(), f.password.value); } catch (e) { toast(friendly(e), true); } };
+forms.signup = async f => {
+  try {
+    const c = await createUserWithEmailAndPassword(auth, f.email.value.trim(), f.password.value);
+    await updateProfile(c.user, { displayName: f.name.value.trim() });
+    await setDoc(doc(db, 'users', c.user.uid), { name: f.name.value.trim(), email: c.user.email, role: 'user', plan: 'free', status: 'active', planExpiry: null, createdAt: serverTimestamp() });
+  } catch (e) { toast(friendly(e), true); }
+};
+acts.reset = async () => { const em = $('#f-in').email.value.trim(); if (!em) return toast('Type your email first, then tap Forgot password.', true); try { await sendPasswordResetEmail(auth, em); toast('Password reset email sent.'); } catch (e) { toast(friendly(e), true); } };
+acts.signout = () => signOut(auth);
+acts.home = () => { closeProject(); S.admin = null; renderDashboard(); };
+acts.close = closeModal;
+
+/* ============ LANDING PRICING ============ */
+function renderPricing() {
+  const s = S.settings, L = s.limits, h = $('#pricing-cards'); if (!h) return;
+  h.innerHTML = `
+  <div class="panel"><h3>Free</h3><div class="price">0 <small>forever</small></div>
+    <ul><li>${L.projects} project</li><li>${L.rooms} rooms per plan</li><li>${L.boq} measurement items</li><li>${L.proc} procurement items</li><li>${L.photos} photos per project</li><li>Materials estimator and risk score</li><li>Soil summary</li><li>PDF reports</li></ul></div>
+  <div class="panel" style="border:2px solid var(--orange)"><h3>Premium</h3>
+    <ul class="curlist">${s.currencies.map(c => `<li><span class="price" style="font-size:2rem">${esc(c.symbol)}${fmt(c.monthly)} <small>per month</small></span><span class="muted">${esc(c.symbol)}${fmt(c.yearly)} per year (${esc(c.code)})</span></li>`).join('')}</ul>
+    <ul><li>Unlimited projects, rooms, items and photos</li><li>Full soil and foundation recommendations</li><li>Export plans as PNG and measurements as CSV</li><li>Pay in your preferred currency by bank transfer</li><li>Activation after payment is confirmed</li></ul></div>`;
+}
+
+/* ============ DASHBOARD ============ */
+function renderDashboard() {
+  S.projectId = null; S.admin = null;
+  const lim = limitOf('projects');
+  $('#main').innerHTML = `<div class="phead"><h2>Your projects</h2><span class="muted">${S.projects.length}${isFinite(lim) ? ' of ' + lim : ''} used</span></div>
+  <p><button class="btn" data-act="newproject">New project</button></p>
+  <details style="margin:0 0 1rem"><summary class="muted" style="cursor:pointer">Account details</summary><p class="muted" style="font-size:.85rem;word-break:break-all;margin:.4rem 0 0">Email: ${esc(S.user.email)}<br>Account ID: ${esc(S.user.uid)}<br>Role: ${esc(S.profile?.role)}</p></details>
+  <div class="panel" id="plist-host">${S.projects.length ? `<ul class="plist">${S.projects.map(p => { const pg = progressOf(p); return `<li>
+    <div><b>${esc(p.name)}</b><br><span class="muted">${esc(p.location || 'No location set')}</span></div>
+    <div><div class="bar"><i style="width:${pg}%"></i></div><span class="muted">${Math.round(pg)}% complete</span></div>
+    <div><button class="btn sm" data-act="open" data-id="${p.id}">Open</button> <button class="btn sm danger" data-act="delproject" data-id="${p.id}">Delete</button></div></li>`; }).join('')}</ul>` : `<p class="muted" style="margin:0">No projects yet. Create one to start drawing your plan and tracking costs.</p>`}</div>`;
+}
+acts.newproject = () => {
+  if (!gate('projects', S.projects.length)) return acts.upgrade();
+  modal(`<h3>New project</h3><form data-form="newproject">
+    <label>Project name<input name="name" required maxlength="80"></label>
+    <label>Location<input name="location" maxlength="120"></label>
+    <div class="row"><label>Currency<select name="currency">${curList().map(c => `<option value="${esc(c.code)}">${esc(c.code)} (${esc(c.symbol)})</option>`).join('')}</select></label><label>Budget<input name="budget" type="number" min="0" step="any"></label></div>
+    <div class="row">
+    <label>Soil type<select name="soil">${Object.entries(SOILS).map(([k, v]) => `<option value="${k}">${v.n}</option>`).join('')}</select></label></div>
+    <div class="row"><label>Start date<input name="startDate" type="date"></label><label>Target finish<input name="endDate" type="date"></label></div>
+    <button class="btn" type="submit">Create project</button> <button class="btn ghost" type="button" data-act="close">Cancel</button></form>`);
+};
+forms.newproject = async f => {
+  try {
+    const d = await addDoc(collection(db, 'users', S.user.uid, 'projects'), { name: f.name.value.trim(), location: f.location.value.trim(), budget: num(f.budget.value), currency: f.currency.value, soil: f.soil.value, water: 'low', slope: 'flat', flood: 'no', startDate: f.startDate.value, endDate: f.endDate.value, rooms: [], planScale: 1, stages: {}, createdAt: serverTimestamp() });
+    closeModal(); openProject(d.id);
+  } catch (e) { toast(friendly(e), true); }
+};
+acts.delproject = async d => {
+  if (!confirm('Delete this project and all its measurements, items and photos? This cannot be undone.')) return;
+  try {
+    const base = ['users', S.user.uid, 'projects', d.id];
+    for (const n of ['boq', 'procurement', 'photos']) {
+      const s = await getDocs(collection(db, ...base, n));
+      for (const x of s.docs) { if (n === 'photos' && x.data().path) deleteObject(ref(storage, x.data().path)).catch(() => { }); await deleteDoc(x.ref); }
+    }
+    await deleteDoc(doc(db, ...base)); toast('Project deleted.');
+  } catch (e) { toast(friendly(e), true); }
+};
+acts.open = d => openProject(d.id);
+
+/* ============ PROJECT SHELL ============ */
+const TABS = [['overview', 'Overview'], ['plan', 'Plan'], ['boq', 'Measurements'], ['mat', 'Materials'], ['proc', 'Procurement'], ['land', 'Land and risk'], ['prog', 'Progress and photos']];
+function openProject(id) {
+  closeProject(); S.projectId = id; S.project = null; S.plan = null; S.tab = 'overview'; S.admin = null;
+  $('#main').innerHTML = '<p class="muted">Loading project...</p>';
+  S.pUnsubs.push(onSnapshot(pref(), s => { if (!s.exists()) return; const first = !S.project; S.project = { id: s.id, ...s.data() }; first ? renderProject() : renderTab(false); }, e => toast(friendly(e), true)));
+  S.pUnsubs.push(onSnapshot(query(sub('boq'), orderBy('createdAt')), s => { S.boq = s.docs.map(d => ({ id: d.id, ...d.data() })); S.project && renderTab(false); }));
+  S.pUnsubs.push(onSnapshot(query(sub('procurement'), orderBy('createdAt')), s => { S.proc = s.docs.map(d => ({ id: d.id, ...d.data() })); S.project && renderTab(false); }));
+  S.pUnsubs.push(onSnapshot(query(sub('photos'), orderBy('createdAt', 'desc')), s => { S.photos = s.docs.map(d => ({ id: d.id, ...d.data() })); S.project && renderTab(false); }));
+}
+function closeProject() { if (S.plan?.dirty && S.projectId) savePlanNow(); S.pUnsubs.forEach(u => u()); S.pUnsubs = []; S.projectId = null; S.project = null; S.boq = []; S.proc = []; S.photos = []; }
+function renderProject() {
+  const p = S.project;
+  $('#main').innerHTML = `<div class="phead"><button class="link" data-act="home">All projects</button><h2>${esc(p.name)}</h2><span class="muted">${esc(p.location || '')}</span></div>
+  <nav class="tabs" role="tablist">${TABS.map(([k, n]) => `<button role="tab" data-act="tab" data-k="${k}" aria-selected="${k === S.tab}">${n}</button>`).join('')}</nav><section id="tab"></section>`;
+  renderTab(true);
+}
+acts.tab = d => { S.tab = d.k; $$('.tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.k === d.k)); renderTab(true); };
+const TAB = {};
+function renderTab(force) {
+  const t = $('#tab'); if (!t || !S.project || S.admin) return;
+  if (!force && S.tab === 'plan' && S.plan) return;
+  const a = document.activeElement;
+  if (!force && t.contains(a) && /INPUT|TEXTAREA|SELECT/.test(a.tagName)) return;
+  TAB[S.tab](t);
+}
+
+/* ---------- Overview ---------- */
+TAB.overview = t => {
+  const p = S.project, pg = progressOf(p), tot = boqTotal(), r = riskOf(p), b = num(p.budget);
+  const spend = S.proc.reduce((a, x) => a + num(x.unitPrice) * num(x.needed), 0);
+  const tips = [];
+  if (!(p.rooms || []).length) tips.push('Draw your first room in the Plan tab to get areas and wall lengths.');
+  if (!S.boq.length) tips.push('Add measured items in Measurements to build a cost estimate.');
+  if (b > 0 && tot > b) tips.push(`The estimate is ${money(tot - b)} over budget. Review rates and quantities.`);
+  if (r.level === 'High') tips.push('Risk is high. Open Land and risk for foundation guidance before ordering materials.');
+  const last = S.photos[0]?.createdAt?.toMillis?.();
+  if (!last || Date.now() - last > 14 * 864e5) tips.push('Upload a site photo to keep your progress record current.');
+  const short = S.proc.filter(x => x.status === 'Delivered' && num(x.delivered) < num(x.needed));
+  if (short.length) tips.push(`${short.length} delivered item(s) are short of the quantity needed: ${short.map(x => esc(x.name)).join(', ')}.`);
+  const bad = S.proc.filter(x => x.quality === 'Failed'); if (bad.length) tips.push(`Quality check failed for: ${bad.map(x => esc(x.name)).join(', ')}. Arrange replacement or a refund.`);
+  if (!tips.length) tips.push('Everything looks on track. Keep updating progress and photos.');
+  t.innerHTML = `<div class="stats">
+    <div class="panel stat"><span class="muted">Overall progress</span><b>${Math.round(pg)}%</b><div class="bar"><i style="width:${pg}%"></i></div></div>
+    <div class="panel stat"><span class="muted">Estimated cost</span><b>${money(tot)}</b><span class="muted">${b ? 'Budget ' + money(b) : 'No budget set'}</span></div>
+    <div class="panel stat"><span class="muted">Materials ordered value</span><b>${money(spend)}</b><span class="muted">${S.proc.length} items tracked</span></div>
+    <div class="panel stat"><span class="muted">Risk score</span><b>${r.score}</b><span class="chip ${r.cls}">${r.level}</span></div></div>
+  <div class="cols2"><div class="panel"><h3>Suggestions</h3><ul class="tips">${tips.map(x => `<li>${x}</li>`).join('')}</ul></div>
+  <div class="panel"><h3>Project details</h3><p class="muted" style="margin:0">Soil: ${esc(SOILS[p.soil]?.n || 'Not set')}<br>Rooms drawn: ${(p.rooms || []).length}<br>Photos: ${S.photos.length}<br>Dates: ${esc(p.startDate || 'not set')} to ${esc(p.endDate || 'not set')}</p>
+  <label style="margin-top:.8rem">Project currency<select data-change="projcur">${curList().map(c => `<option value="${esc(c.code)}" ${c.code === projCur() ? 'selected' : ''}>${esc(c.code)} (${esc(c.symbol)})</option>`).join('')}</select></label>
+  <button class="btn" data-act="pdf" data-k="full">Download full report (PDF)</button></div></div>`;
+};
+
+changes.projcur = async el => { el.blur(); try { await updateDoc(pref(), { currency: el.value }); } catch (e) { toast(friendly(e), true); } };
+
+/* ---------- Plan ---------- */
+const ROOM_TYPES = {
+  'Bedroom': ['#DCE9F5', 4, 3.5], 'Living room': ['#FBE7D5', 6, 4.5], 'Kitchen': ['#FFF1C9', 3.5, 3], 'Bathroom': ['#D9F0EC', 2.4, 1.8],
+  'Toilet': ['#D9F0EC', 1.5, 1.2], 'Dining': ['#F5E1EA', 4, 3.5], 'Store': ['#E6E6E6', 2.5, 2.5], 'Garage': ['#E3E9D6', 6, 3.5],
+  'Corridor': ['#F1F1F1', 1.2, 4], 'Office': ['#E4E1F3', 3.5, 3], 'Balcony': ['#E9F3DD', 3, 1.5], 'Other': ['#EEF2F5', 3, 3]
+};
+const WINDOW_TYPES = ['Bedroom', 'Living room', 'Kitchen', 'Dining', 'Office', 'Bathroom'];
+const rid = () => Math.random().toString(36).slice(2, 9);
+const clamp = (v, a, b) => Math.max(a, Math.min(v, b));
+function initPlan() {
+  const p = S.project; let rooms = structuredClone(p.rooms || []), plot = p.plot;
+  if (!p.planV) { // older plans were stored in grid squares: convert to metres
+    const k = p.planScale || 1;
+    rooms = rooms.map(r => ({ name: r.name, x: r.x * k, y: r.y * k, w: r.w * k, h: r.h * k }));
+    plot = { w: 40 * k, h: 25 * k };
+  }
+  rooms.forEach(r => { r.id = r.id || rid(); r.type = r.type || 'Other'; r.door = r.door || ''; r.win = r.win || ''; });
+  S.plan = { rooms, plot: plot || { w: 25, h: 18 }, sel: null, snap: .5, zoom: 1 };
+}
+const ensurePlan = () => { if (!S.plan) initPlan(); };
+const selRoom = () => (S.plan && S.plan.rooms.find(r => r.id === S.plan.sel)) || null;
+
+/* geometry helpers */
+function sharedLen(R) {
+  let t = 0; const e = .001;
+  for (let i = 0; i < R.length; i++) for (let j = i + 1; j < R.length; j++) {
+    const a = R[i], b = R[j];
+    if (Math.abs(a.x + a.w - b.x) < e || Math.abs(b.x + b.w - a.x) < e) t += Math.max(0, Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y));
+    if (Math.abs(a.y + a.h - b.y) < e || Math.abs(b.y + b.h - a.y) < e) t += Math.max(0, Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x));
+  }
+  return t;
+}
+function planStats() {
+  const R = S.plan.rooms, area = R.reduce((a, r) => a + r.w * r.h, 0), gross = R.reduce((a, r) => a + 2 * (r.w + r.h), 0), shared = sharedLen(R);
+  return { area, gross, shared, walls: gross - shared, plotArea: S.plan.plot.w * S.plan.plot.h };
+}
+function overlaps() {
+  const R = S.plan.rooms, out = [];
+  for (let i = 0; i < R.length; i++) for (let j = i + 1; j < R.length; j++) {
+    const a = R[i], b = R[j];
+    if (Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x) > .01 && Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y) > .01) out.push([a, b]);
+  }
+  return out;
+}
+function findSpot(w, h) {
+  const P = S.plan, hit = (x, y) => P.rooms.some(r => x < r.x + r.w - .01 && x + w > r.x + .01 && y < r.y + r.h - .01 && y + h > r.y + .01);
+  for (let y = 0; y + h <= P.plot.h + .001; y += .5) for (let x = 0; x + w <= P.plot.w + .001; x += .5) if (!hit(x, y)) return { x, y };
+  return { x: 0, y: 0, over: true };
+}
+function magnet(r, x, y) {
+  const T = .3; let bx = null, by = null;
+  for (const o of S.plan.rooms) {
+    if (o.id === r.id) continue;
+    for (const c of [o.x + o.w, o.x - r.w, o.x, o.x + o.w - r.w]) { const d = Math.abs(x - c); if (d < T && (!bx || d < bx.d)) bx = { d, c }; }
+    for (const c of [o.y + o.h, o.y - r.h, o.y, o.y + o.h - r.h]) { const d = Math.abs(y - c); if (d < T && (!by || d < by.d)) by = { d, c }; }
+  }
+  return { x: bx ? bx.c : x, y: by ? by.c : y };
+}
+
+/* drawing */
+function opening(g, r, wall, wm, kind, off, X, Y, s, wt) {
+  const horiz = wall === 'N' || wall === 'S', len = horiz ? r.w : r.h, ow = Math.min(wm, Math.max(.4, len - .6)), od = ow * s;
+  const c = (horiz ? X(r.x + r.w / 2) : Y(r.y + r.h / 2)) + off * s;
+  const fixed = wall === 'N' ? Y(r.y) : wall === 'S' ? Y(r.y + r.h) : wall === 'W' ? X(r.x) : X(r.x + r.w);
+  const a = c - od / 2;
+  g.save(); g.fillStyle = '#fff';
+  if (horiz) g.fillRect(a, fixed - wt / 2 - .5, od, wt + 1); else g.fillRect(fixed - wt / 2 - .5, a, wt + 1, od);
+  g.strokeStyle = '#10253A'; g.lineWidth = 1; g.beginPath();
+  if (kind === 'win') {
+    for (const k of [-.5, 0, .5]) { if (horiz) { g.moveTo(a, fixed + k * wt); g.lineTo(a + od, fixed + k * wt); } else { g.moveTo(fixed + k * wt, a); g.lineTo(fixed + k * wt, a + od); } }
+    g.stroke();
+  } else {
+    g.lineWidth = Math.max(1.2, s * .05);
+    if (wall === 'N') { g.moveTo(a, fixed); g.lineTo(a, fixed + od); g.stroke(); g.lineWidth = 1; g.beginPath(); g.arc(a, fixed, od, 0, Math.PI / 2, false); }
+    else if (wall === 'S') { g.moveTo(a, fixed); g.lineTo(a, fixed - od); g.stroke(); g.lineWidth = 1; g.beginPath(); g.arc(a, fixed, od, 0, -Math.PI / 2, true); }
+    else if (wall === 'W') { g.moveTo(fixed, a); g.lineTo(fixed + od, a); g.stroke(); g.lineWidth = 1; g.beginPath(); g.arc(fixed, a, od, Math.PI / 2, 0, true); }
+    else { g.moveTo(fixed, a); g.lineTo(fixed - od, a); g.stroke(); g.lineWidth = 1; g.beginPath(); g.arc(fixed, a, od, Math.PI / 2, Math.PI, false); }
+    g.stroke();
+  }
+  g.restore();
+}
+function paintPlan(g, W, H, o) {
+  const P = S.plan, pl = P.plot, sheet = o.mode === 'sheet', R = P.rooms, FONT = '"IBM Plex Sans", Arial, sans-serif';
+  g.fillStyle = '#fff'; g.fillRect(0, 0, W, H);
+  let ox, oy, s;
+  if (sheet) { const bw = W - 170, bh = H - 60 - 175; s = Math.min(bw / pl.w, bh / pl.h); ox = 85 + (bw - s * pl.w) / 2; oy = 70 + (bh - s * pl.h) / 2; }
+  else { ox = 34; oy = 24; s = (W - ox - 12) / pl.w; P.view = { ox, oy, s, W, H }; }
+  const X = m => ox + m * s, Y = m => oy + m * s;
+  g.fillStyle = '#FAFCFD'; g.fillRect(X(0), Y(0), pl.w * s, pl.h * s); g.lineWidth = 1;
+  for (let i = 0; i <= pl.w; i++) { if (s < 7 && i % 5) continue; g.strokeStyle = i % 5 ? '#EDF2F5' : '#D5DEE5'; g.beginPath(); g.moveTo(X(i), Y(0)); g.lineTo(X(i), Y(pl.h)); g.stroke(); }
+  for (let j = 0; j <= pl.h; j++) { if (s < 7 && j % 5) continue; g.strokeStyle = j % 5 ? '#EDF2F5' : '#D5DEE5'; g.beginPath(); g.moveTo(X(0), Y(j)); g.lineTo(X(pl.w), Y(j)); g.stroke(); }
+  g.save(); g.setLineDash([8, 5]); g.strokeStyle = '#5A6E80'; g.lineWidth = 1.5; g.strokeRect(X(0), Y(0), pl.w * s, pl.h * s); g.restore();
+  g.fillStyle = '#5A6E80'; g.strokeStyle = '#5A6E80'; g.font = `10px ${FONT}`;
+  if (!sheet) {
+    const st = [1, 2, 5, 10, 20].find(v => v * s >= 38) || 50; g.lineWidth = 1; g.textAlign = 'center'; g.textBaseline = 'bottom';
+    for (let i = 0; i <= pl.w; i += st) { g.beginPath(); g.moveTo(X(i), oy - 5); g.lineTo(X(i), oy); g.stroke(); g.fillText(String(i), X(i), oy - 6); }
+    g.textAlign = 'right'; g.textBaseline = 'middle';
+    for (let j = 0; j <= pl.h; j += st) { g.beginPath(); g.moveTo(ox - 5, Y(j)); g.lineTo(ox, Y(j)); g.stroke(); g.fillText(String(j), ox - 7, Y(j)); }
+  } else {
+    g.lineWidth = 1; g.font = `600 13px ${FONT}`; g.textAlign = 'center'; g.textBaseline = 'bottom';
+    const ty = Y(0) - 22; g.beginPath(); g.moveTo(X(0), ty); g.lineTo(X(pl.w), ty); g.moveTo(X(0), ty - 5); g.lineTo(X(0), ty + 5); g.moveTo(X(pl.w), ty - 5); g.lineTo(X(pl.w), ty + 5); g.stroke(); g.fillText(`${fmt(pl.w)} m`, X(pl.w / 2), ty - 4);
+    const lx = X(0) - 22; g.beginPath(); g.moveTo(lx, Y(0)); g.lineTo(lx, Y(pl.h)); g.moveTo(lx - 5, Y(0)); g.lineTo(lx + 5, Y(0)); g.moveTo(lx - 5, Y(pl.h)); g.lineTo(lx + 5, Y(pl.h)); g.stroke();
+    g.save(); g.translate(lx - 4, Y(pl.h / 2)); g.rotate(-Math.PI / 2); g.fillText(`${fmt(pl.h)} m`, 0, 0); g.restore();
+  }
+  R.forEach(r => { g.fillStyle = (ROOM_TYPES[r.type] || ROOM_TYPES.Other)[0]; g.fillRect(X(r.x), Y(r.y), r.w * s, r.h * s); });
+  overlaps().forEach(([a, b]) => { const x1 = Math.max(a.x, b.x), y1 = Math.max(a.y, b.y), x2 = Math.min(a.x + a.w, b.x + b.w), y2 = Math.min(a.y + a.h, b.y + b.h); g.fillStyle = 'rgba(194,59,46,.35)'; g.fillRect(X(x1), Y(y1), (x2 - x1) * s, (y2 - y1) * s); });
+  const wt = Math.max(2, .23 * s);
+  g.strokeStyle = '#10253A'; g.lineWidth = wt; g.lineJoin = 'miter'; R.forEach(r => g.strokeRect(X(r.x), Y(r.y), r.w * s, r.h * s));
+  R.forEach(r => {
+    const both = r.door && r.door === r.win, len = (r.win === 'N' || r.win === 'S') ? r.w : r.h;
+    if (r.win) opening(g, r, r.win, 1.2, 'win', both ? -len / 4 : 0, X, Y, s, wt);
+    if (r.door) opening(g, r, r.door, .9, 'door', both ? len / 4 : 0, X, Y, s, wt);
+  });
+  R.forEach(r => {
+    const cx = X(r.x + r.w / 2), cy = Y(r.y + r.h / 2), maxW = r.w * s - wt - 4;
+    let f = Math.min(sheet ? 16 : 14, Math.max(8, s * .55)); g.font = `600 ${f}px ${FONT}`;
+    const tw = g.measureText(r.name).width; if (tw > maxW) f = f * maxW / tw;
+    if (f < 6.5 || r.h * s < f * 2.2) return;
+    g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = `600 ${f}px ${FONT}`; g.fillStyle = '#10253A'; g.fillText(r.name, cx, cy - f * .7);
+    g.font = `${f * .85}px ${FONT}`; g.fillStyle = '#34495E';
+    const sz = `${fmt(r.w)} x ${fmt(r.h)} m`; if (g.measureText(sz).width <= maxW) g.fillText(sz, cx, cy + f * .35);
+    if (sheet && r.h * s > f * 3.6) { const ar = `${fmt(r.w * r.h)} m²`; if (g.measureText(ar).width <= maxW) g.fillText(ar, cx, cy + f * 1.4); }
+  });
+  const sel = R.find(r => r.id === P.sel);
+  if (sel && !sheet) {
+    g.save(); g.strokeStyle = '#F26A1B'; g.lineWidth = 2.5; g.setLineDash([6, 4]); g.strokeRect(X(sel.x) - 2, Y(sel.y) - 2, sel.w * s + 4, sel.h * s + 4); g.restore();
+    g.font = `700 11px ${FONT}`; g.fillStyle = '#C9520D'; g.textAlign = 'center'; g.textBaseline = 'bottom';
+    g.fillText(`${fmt(sel.w)} m`, X(sel.x + sel.w / 2), Y(sel.y) - 5 > oy + 10 ? Y(sel.y) - 5 : Y(sel.y) + 14);
+    g.save(); g.translate(X(sel.x) - 5 > ox + 10 ? X(sel.x) - 5 : X(sel.x) + 14, Y(sel.y + sel.h / 2)); g.rotate(-Math.PI / 2); g.fillText(`${fmt(sel.h)} m`, 0, 0); g.restore();
+    const hx = X(sel.x + sel.w), hy = Y(sel.y + sel.h); g.fillStyle = '#F26A1B'; g.strokeStyle = '#fff'; g.lineWidth = 2; g.fillRect(hx - 7, hy - 7, 14, 14); g.strokeRect(hx - 7, hy - 7, 14, 14);
+  }
+  if (sheet) {
+    g.strokeStyle = '#10253A'; g.lineWidth = 3; g.strokeRect(12, 12, W - 24, H - 24);
+    const nx = W - 70, ny = 95; g.fillStyle = '#10253A'; g.beginPath(); g.moveTo(nx, ny - 26); g.lineTo(nx + 11, ny + 12); g.lineTo(nx, ny + 4); g.lineTo(nx - 11, ny + 12); g.closePath(); g.fill();
+    g.font = `700 16px ${FONT}`; g.textAlign = 'center'; g.textBaseline = 'bottom'; g.fillText('N', nx, ny - 29);
+    const sy = H - 150, bl = 5 * s; g.lineWidth = 1; for (let i = 0; i < 5; i++) { g.fillStyle = i % 2 ? '#fff' : '#10253A'; g.fillRect(85 + i * s, sy, s, 8); g.strokeRect(85 + i * s, sy, s, 8); }
+    g.fillStyle = '#10253A'; g.font = `12px ${FONT}`; g.textAlign = 'left'; g.textBaseline = 'top'; g.fillText('0', 85, sy + 11); g.textAlign = 'right'; g.fillText('5 m', 85 + bl, sy + 11);
+    const ty = H - 128, th = 104, st = planStats(), p = S.project; g.lineWidth = 2; g.strokeRect(24, ty, W - 48, th);
+    const c1 = 24 + (W - 48) * .42, c2 = 24 + (W - 48) * .72; g.beginPath(); g.moveTo(c1, ty); g.lineTo(c1, ty + th); g.moveTo(c2, ty); g.lineTo(c2, ty + th); g.stroke();
+    g.textAlign = 'left'; g.textBaseline = 'top'; g.fillStyle = '#5A6E80'; g.font = `11px ${FONT}`; g.fillText('PROJECT', 36, ty + 10); g.fillText('DRAWING', c1 + 12, ty + 10); g.fillText('DATE AND CREDIT', c2 + 12, ty + 10);
+    g.fillStyle = '#10253A'; g.font = `700 24px ${FONT}`; g.fillText((p.name || '').slice(0, 30), 36, ty + 28); g.font = `15px ${FONT}`; g.fillText((p.location || '').slice(0, 44), 36, ty + 62);
+    g.font = `700 17px ${FONT}`; g.fillText('Ground floor plan', c1 + 12, ty + 28); g.font = `14px ${FONT}`;
+    g.fillText(`Plot ${fmt(pl.w)} x ${fmt(pl.h)} m (${fmt(st.plotArea)} m²)`, c1 + 12, ty + 54); g.fillText(`Built area ${fmt(st.area)} m²`, c1 + 12, ty + 74);
+    g.fillText(new Date().toLocaleDateString(), c2 + 12, ty + 28); g.fillText('Prepared with Plotwise', c2 + 12, ty + 54); g.fillText('Powered by Step By Step Digital', c2 + 12, ty + 74);
+  }
+}
+function paint() {
+  const cv = $('#cv'), wrap = $('#cvwrap'); if (!cv || !wrap || !S.plan) return;
+  const P = S.plan, W = Math.max(280, Math.round(wrap.clientWidth * (P.zoom || 1))), sc = (W - 34 - 12) / P.plot.w, H = Math.round(24 + sc * P.plot.h + 12), dpr = window.devicePixelRatio || 1;
+  cv.style.width = W + 'px'; cv.style.height = H + 'px'; cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+  const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); paintPlan(g, W, H, { mode: 'edit' });
+}
+function sheetCanvas() {
+  ensurePlan(); const W = 1400, H = 1000, k = 1.5, cv = document.createElement('canvas'); cv.width = W * k; cv.height = H * k;
+  const g = cv.getContext('2d'); g.scale(k, k); paintPlan(g, W, H, { mode: 'sheet' }); return cv;
+}
+
+/* saving */
+let planT = null;
+const planStatus = t => { const e = $('#planstatus'); if (e) e.textContent = t; };
+function savePlanSoon() { S.plan.dirty = true; planStatus('Saving...'); clearTimeout(planT); planT = setTimeout(savePlanNow, 1200); }
+async function savePlanNow() {
+  clearTimeout(planT); if (!S.plan || !S.projectId) return;
+  const P = S.plan, st = planStats(), ref_ = pref(), r3 = v => +Number(v).toFixed(3);
+  P.dirty = false;
+  try {
+    await updateDoc(ref_, { rooms: P.rooms.map(r => ({ id: r.id, name: r.name, type: r.type, x: r3(r.x), y: r3(r.y), w: r3(r.w), h: r3(r.h), door: r.door || '', win: r.win || '' })), plot: { w: P.plot.w, h: P.plot.h }, planV: 2, planSummary: { area: +st.area.toFixed(2), perimeter: +st.walls.toFixed(2) } });
+    planStatus('All changes saved');
+  } catch (e) { P.dirty = true; planStatus('Not saved'); toast(friendly(e), true); }
+}
+function planChanged() { paint(); roomList(); savePlanSoon(); }
+
+/* UI */
+function hint() {
+  const e = $('#planhint'); if (!e) return;
+  e.textContent = selRoom() ? 'Drag the room to move it, or drag the orange corner square to resize. Tap Done to scroll the page again.' : 'Tap a room to select it. Add rooms with the form, then drag them into place. Use Zoom for detail.';
+}
+function selectRoom(id) {
+  S.plan.sel = id; const cv = $('#cv'); if (cv) cv.style.touchAction = id ? 'none' : 'auto';
+  paint(); renderRoomEdit(); roomList(); hint();
+}
+function renderRoomEdit() {
+  const h = $('#roomedit'); if (!h) return; const r = selRoom();
+  if (!r) { h.innerHTML = '<h3>Edit room</h3><p class="muted" style="margin:0">Tap a room on the plan or in the list to change its name, size, position, door and window.</p>'; return; }
+  const f = (k, l) => `<label>${l}<input type="number" step="0.1" min="0" value="${+r[k].toFixed(3)}" data-input="redit" data-change="redit" data-f="${k}"></label>`;
+  const walls = [['N', 'North (top)'], ['E', 'East (right)'], ['S', 'South (bottom)'], ['W', 'West (left)']];
+  const ws = (k, l) => `<label>${l}<select data-change="redit" data-f="${k}"><option value="">None</option>${walls.map(([v, n]) => `<option value="${v}" ${r[k] === v ? 'selected' : ''}>${n}</option>`).join('')}</select></label>`;
+  h.innerHTML = `<h3>Edit room</h3>
+  <div class="row"><label>Name<input value="${esc(r.name)}" maxlength="40" data-input="redit" data-change="redit" data-f="name"></label>
+  <label>Type<select data-change="redit" data-f="type">${Object.keys(ROOM_TYPES).map(t => `<option ${r.type === t ? 'selected' : ''}>${t}</option>`).join('')}</select></label></div>
+  <div class="row">${f('w', 'Length (m)')}${f('h', 'Width (m)')}</div>
+  <div class="row">${f('x', 'From left edge (m)')}${f('y', 'From top edge (m)')}</div>
+  <div class="row">${ws('door', 'Door on wall')}${ws('win', 'Window on wall')}</div>
+  <p style="margin:0"><button class="btn sm" data-act="rotroom">Rotate 90°</button> <button class="btn sm ghost" data-act="duproom">Duplicate</button> <button class="btn sm danger" data-act="delroom" data-id="${r.id}">Delete</button> <button class="btn sm ghost" data-act="donesel">Done</button></p>`;
+}
+function syncEdit() { const r = selRoom(); if (!r) return; $$('#roomedit [data-f]').forEach(el => { const k = el.dataset.f; if (['x', 'y', 'w', 'h'].includes(k)) el.value = +r[k].toFixed(2); }); }
+function roomList() {
+  const h = $('#roomlist'); if (!h) return; const P = S.plan, st = planStats(), ov = overlaps(), cov = st.plotArea ? Math.round(st.area / st.plotArea * 100) : 0;
+  h.innerHTML = `<h3>Rooms</h3>` + (P.rooms.length ? `<div class="tw"><table><thead><tr><th>Room</th><th class="num">Length (m)</th><th class="num">Width (m)</th><th class="num">Area (m²)</th><th></th></tr></thead><tbody>${P.rooms.map(r => `<tr data-act="selroom" data-id="${r.id}" style="cursor:pointer;${r.id === P.sel ? 'background:#FDEBDD' : ''}"><td><b>${esc(r.name)}</b><br><span class="muted">${esc(r.type)}</span></td><td class="num">${fmt(r.w)}</td><td class="num">${fmt(r.h)}</td><td class="num">${fmt(r.w * r.h)}</td><td><button class="btn sm danger" data-act="delroom" data-id="${r.id}">Remove</button></td></tr>`).join('')}</tbody><tfoot><tr><th>Total built area</th><th></th><th></th><th class="num">${fmt(st.area)}</th><th></th></tr></tfoot></table></div>
+  <p class="muted" style="margin:.7rem 0 0">Plot ${fmt(P.plot.w)} x ${fmt(P.plot.h)} m (${fmt(st.plotArea)} m²). Built area covers ${cov}% of the plot. Net wall length ${fmt(st.walls)} m, with shared walls counted once. This feeds the Materials estimator.</p>
+  ${ov.length ? `<p style="margin:.6rem 0 0"><span class="chip bad">Overlap</span> ${ov.map(([a, b]) => `${esc(a.name)} and ${esc(b.name)}`).join('; ')}</p>` : ''}` : '<p class="muted" style="margin:0">No rooms yet. Add your first room with the form.</p>');
+}
+TAB.plan = t => {
+  ensurePlan(); const P = S.plan;
+  t.innerHTML = `<div class="planlay"><div class="panel">
+    <div class="row">
+      <label>Plot length (m)<input type="number" step="0.5" min="3" value="${P.plot.w}" data-change="plotchg" data-f="w"></label>
+      <label>Plot width (m)<input type="number" step="0.5" min="3" value="${P.plot.h}" data-change="plotchg" data-f="h"></label>
+      <label>Snap to<select data-change="snapchg">${[0.1, 0.25, 0.5, 1].map(v => `<option value="${v}" ${v == P.snap ? 'selected' : ''}>${v} m</option>`).join('')}</select></label>
+      <label>Zoom<select data-change="zoomchg">${[1, 1.5, 2, 3].map(v => `<option value="${v}" ${v == (P.zoom || 1) ? 'selected' : ''}>${v}x</option>`).join('')}</select></label></div>
+    <div id="cvwrap" style="overflow-x:auto;border:2px solid var(--ink);border-radius:4px"><canvas id="cv" aria-label="Floor plan drawing"></canvas></div>
+    <p class="muted" id="planhint" style="margin:.6rem 0"></p>
+    <p style="margin:0"><button class="btn ghost sm" data-act="exportplan">Export PNG ${prem() ? '' : '(premium)'}</button> <button class="btn sm" data-act="pdf" data-k="plan">Download PDF</button> <button class="btn ghost sm" data-act="clearplan">Clear all</button> <span class="muted" id="planstatus"></span></p></div>
+    <div><div class="panel"><form data-form="addroom"><h3>Add a room</h3>
+      <div class="row"><label>Room type<select name="rtype" data-change="roomtype">${Object.keys(ROOM_TYPES).map(k => `<option>${k}</option>`).join('')}</select></label><label>Name (optional)<input name="rname" maxlength="40"></label></div>
+      <div class="row"><label>Length (m)<input name="rw" type="number" step="0.1" min="0.5" value="4" required></label><label>Width (m)<input name="rh" type="number" step="0.1" min="0.5" value="3.5" required></label></div>
+      <button class="btn" type="submit">Add to plan</button></form></div>
+    <div class="panel" id="roomedit" style="margin-top:1rem"></div></div></div>
+    <div class="panel" id="roomlist" style="margin-top:1rem"></div>`;
+  bindCanvas($('#cv')); selectRoom(selRoom() ? P.sel : null); planStatus(P.dirty ? 'Saving...' : '');
+};
+window.addEventListener('resize', () => { if (S.tab === 'plan' && $('#cv') && S.plan) paint(); });
+function bindCanvas(cv) {
+  let drag = null;
+  const pt = e => { const r = cv.getBoundingClientRect(), v = S.plan.view, px = e.clientX - r.left, py = e.clientY - r.top; return { px, py, mx: (px - v.ox) / v.s, my: (py - v.oy) / v.s }; };
+  const inside = (r, q) => q.mx >= r.x && q.mx <= r.x + r.w && q.my >= r.y && q.my <= r.y + r.h;
+  const snapv = v => +(Math.round(v / S.plan.snap) * S.plan.snap).toFixed(3);
+  cv.onpointerdown = e => {
+    const P = S.plan, q = pt(e), sel = selRoom();
+    if (sel) {
+      const hx = P.view.ox + (sel.x + sel.w) * P.view.s, hy = P.view.oy + (sel.y + sel.h) * P.view.s;
+      if (Math.hypot(q.px - hx, q.py - hy) <= 22) { drag = { mode: 'resize' }; cv.setPointerCapture(e.pointerId); return; }
+    }
+    const hit = (sel && inside(sel, q)) ? sel : [...P.rooms].reverse().find(r => inside(r, q));
+    if (hit && sel && hit.id === sel.id) { drag = { mode: 'move', dx: q.mx - hit.x, dy: q.my - hit.y }; cv.setPointerCapture(e.pointerId); }
+    else if (hit) selectRoom(hit.id);
+    else if (sel) selectRoom(null);
+  };
+  cv.onpointermove = e => {
+    if (!drag) return; const P = S.plan, r = selRoom(), q = pt(e); if (!r) return;
+    if (drag.mode === 'move') { const m = magnet(r, snapv(q.mx - drag.dx), snapv(q.my - drag.dy)); r.x = clamp(m.x, 0, P.plot.w - r.w); r.y = clamp(m.y, 0, P.plot.h - r.h); }
+    else { r.w = clamp(snapv(q.mx - r.x), .5, Math.max(.5, P.plot.w - r.x)); r.h = clamp(snapv(q.my - r.y), .5, Math.max(.5, P.plot.h - r.y)); }
+    paint(); syncEdit();
+  };
+  cv.onpointerup = cv.onpointercancel = () => { if (drag) { drag = null; planChanged(); } };
+}
+changes.roomtype = el => { const d = ROOM_TYPES[el.value], f = el.form; f.rw.value = d[1]; f.rh.value = d[2]; };
+forms.addroom = f => {
+  const P = S.plan; if (!gate('rooms', P.rooms.length)) return;
+  const type = f.rtype.value, w = Math.max(.5, num(f.rw.value)), h = Math.max(.5, num(f.rh.value));
+  if (w > P.plot.w || h > P.plot.h) return toast('That room is bigger than the plot. Increase the plot size first.', true);
+  const n = P.rooms.filter(r => r.type === type).length + 1, spot = findSpot(w, h);
+  const r = { id: rid(), name: f.rname.value.trim() || `${type} ${n}`, type, x: spot.x, y: spot.y, w, h, door: type === 'Corridor' ? '' : 'S', win: WINDOW_TYPES.includes(type) ? 'N' : '' };
+  P.rooms.push(r); f.rname.value = '';
+  if (spot.over) toast('There was no free space, so the room was placed over others. Drag it to a better spot.');
+  selectRoom(r.id); planChanged();
+};
+function applyEdit(el, commit) {
+  const r = selRoom(); if (!r) return; const P = S.plan, k = el.dataset.f;
+  if (k === 'name') { r.name = el.value || (commit ? 'Room' : ''); }
+  else if (['x', 'y', 'w', 'h'].includes(k)) {
+    const v = num(el.value); if ((k === 'w' || k === 'h') && v < .3 && !commit) return;
+    r[k] = k === 'w' || k === 'h' ? Math.max(commit ? .5 : .3, v) : Math.max(0, v);
+    if (commit) {
+      if (r.w > P.plot.w || r.h > P.plot.h) toast('A room cannot be bigger than the plot. Increase the plot size first.', true);
+      r.w = Math.min(r.w, P.plot.w); r.h = Math.min(r.h, P.plot.h); r.x = clamp(r.x, 0, P.plot.w - r.w); r.y = clamp(r.y, 0, P.plot.h - r.h);
+    }
+  } else r[k] = el.value;
+  if (commit) renderRoomEdit();
+  planChanged();
+}
+inputs.redit = el => applyEdit(el, false);
+changes.redit = el => applyEdit(el, true);
+changes.plotchg = () => {
+  const P = S.plan, ins = $$('[data-change=plotchg]'), w = Math.max(3, num(ins[0].value)), h = Math.max(3, num(ins[1].value));
+  const minW = Math.max(0, ...P.rooms.map(r => r.x + r.w)), minH = Math.max(0, ...P.rooms.map(r => r.y + r.h));
+  P.plot.w = Math.max(w, Math.ceil(minW)); P.plot.h = Math.max(h, Math.ceil(minH));
+  if (P.plot.w !== w || P.plot.h !== h) toast('The plot cannot be smaller than your rooms. Move the rooms first.', true);
+  ins[0].value = P.plot.w; ins[1].value = P.plot.h; planChanged();
+};
+changes.snapchg = el => { S.plan.snap = num(el.value); };
+changes.zoomchg = el => { S.plan.zoom = num(el.value); paint(); };
+acts.selroom = d => selectRoom(d.id);
+acts.donesel = () => selectRoom(null);
+acts.delroom = d => {
+  const P = S.plan, r = P.rooms.find(x => x.id === d.id); if (!r || !confirm(`Remove ${r.name}?`)) return;
+  P.rooms = P.rooms.filter(x => x.id !== d.id); if (P.sel === d.id) P.sel = null; selectRoom(P.sel); planChanged();
+};
+acts.rotroom = () => {
+  const r = selRoom(), P = S.plan; if (!r) return;
+  if (r.h > P.plot.w || r.w > P.plot.h) return toast('It will not fit the plot when rotated.', true);
+  [r.w, r.h] = [r.h, r.w]; r.x = clamp(r.x, 0, P.plot.w - r.w); r.y = clamp(r.y, 0, P.plot.h - r.h); renderRoomEdit(); planChanged();
+};
+acts.duproom = () => {
+  const r = selRoom(), P = S.plan; if (!r || !gate('rooms', P.rooms.length)) return;
+  const spot = findSpot(r.w, r.h), c = { ...r, id: rid(), name: r.name + ' copy', x: spot.x, y: spot.y }; P.rooms.push(c); selectRoom(c.id); planChanged();
+};
+acts.clearplan = () => { const P = S.plan; if (P.rooms.length && !confirm('Remove all rooms from this plan?')) return; P.rooms = []; selectRoom(null); planChanged(); };
+acts.exportplan = () => {
+  if (!prem()) { toast('PNG export is a premium feature.', true); return acts.upgrade(); }
+  const a = document.createElement('a'); a.download = `${S.project.name}-plan.png`; a.href = sheetCanvas().toDataURL('image/png'); a.click();
+};
+
+/* ---------- Measurements (BOQ) ---------- */
+TAB.boq = t => {
+  const tot = boqTotal(), b = num(S.project.budget);
+  t.innerHTML = `<div class="panel"><form data-form="boq"><div class="row">
+    <label>Description<input name="desc" required maxlength="100" placeholder="e.g. Excavation for strip footing"></label>
+    <label>Unit<input name="unit" required maxlength="10" placeholder="m³, m², m, no"></label>
+    <label>Quantity<input name="qty" type="number" step="any" min="0" required></label>
+    <label>Rate (${esc(symOf(projCur()))})<input name="rate" type="number" step="any" min="0" required></label></div>
+    <button class="btn" type="submit">Add item</button></form></div>
+  <div class="panel" style="margin-top:1rem"><div class="tw"><table><thead><tr><th>Description</th><th>Unit</th><th class="num">Quantity</th><th class="num">Rate</th><th class="num">Amount</th><th></th></tr></thead><tbody>
+  ${S.boq.map(r => `<tr><td>${esc(r.desc)}</td><td>${esc(r.unit)}</td><td><input type="number" step="any" value="${r.qty}" data-change="boqedit" data-id="${r.id}" data-f="qty" aria-label="Quantity"></td><td><input type="number" step="any" value="${r.rate}" data-change="boqedit" data-id="${r.id}" data-f="rate" aria-label="Rate"></td><td class="num">${fmt(r.amount)}</td><td><button class="btn sm danger" data-act="delboq" data-id="${r.id}">Remove</button></td></tr>`).join('') || '<tr><td colspan="6" class="muted">No items yet.</td></tr>'}
+  </tbody><tfoot><tr><th colspan="4">Total</th><th class="num">${money(tot)}</th><th></th></tr></tfoot></table></div>
+  <p style="margin:.8rem 0 0">${b ? `Budget ${money(b)}: ${tot <= b ? `${money(b - tot)} remaining` : `<b style="color:var(--bad)">${money(tot - b)} over budget</b>`}.` : 'Set a budget in project settings to compare.'} <button class="btn ghost sm" data-act="exportboq">Export CSV ${prem() ? '' : '(premium)'}</button> <button class="btn sm" data-act="pdf" data-k="boq">Download PDF</button></p></div>`;
+};
+forms.boq = async f => {
+  if (!gate('boq', S.boq.length)) return;
+  const qty = num(f.qty.value), rate = num(f.rate.value);
+  try { await addDoc(sub('boq'), { desc: f.desc.value.trim(), unit: f.unit.value.trim(), qty, rate, amount: +(qty * rate).toFixed(2), createdAt: serverTimestamp() }); } catch (e) { toast(friendly(e), true); }
+};
+changes.boqedit = async (el, d) => {
+  const r = S.boq.find(x => x.id === d.id); if (!r) return; const v = Math.max(0, num(el.value)); const n = { ...r, [d.f]: v };
+  try { await updateDoc(doc(db, 'users', S.user.uid, 'projects', S.projectId, 'boq', d.id), { [d.f]: v, amount: +(n.qty * n.rate).toFixed(2) }); } catch (e) { toast(friendly(e), true); }
+};
+acts.delboq = async d => { try { await deleteDoc(doc(db, 'users', S.user.uid, 'projects', S.projectId, 'boq', d.id)); } catch (e) { toast(friendly(e), true); } };
+acts.exportboq = () => {
+  if (!prem()) { toast('CSV export is a premium feature.', true); return acts.upgrade(); }
+  const q = v => `"${String(v).replace(/"/g, '""')}"`;
+  const rows = [['Description', 'Unit', 'Quantity', 'Rate', 'Amount'], ...S.boq.map(r => [r.desc, r.unit, r.qty, r.rate, r.amount]), ['Total', '', '', '', boqTotal()]];
+  const a = document.createElement('a'); a.download = `${S.project.name}-measurements.csv`; a.href = URL.createObjectURL(new Blob([rows.map(r => r.map(q).join(',')).join('\n')], { type: 'text/csv' })); a.click();
+};
+
+/* ---------- Materials estimator ---------- */
+const EST_KEYS = ['wallLen', 'wallH', 'openings', 'blockT', 'slabArea', 'slabT', 'foundVol', 'mix', 'waste', 'rebar', 'pBlock', 'pCement', 'pSand', 'pGranite', 'pRebar'];
+function estInputs() {
+  const p = S.project, s = p.planSummary || {}, e = p.est || {};
+  return { wallLen: s.perimeter || 40, wallH: 3, openings: 8, blockT: '225', slabArea: s.area || 80, slabT: 0.15, foundVol: 8, mix: '1:2:4', waste: 5, rebar: 100, pBlock: 0, pCement: 0, pSand: 0, pGranite: 0, pRebar: 0, ...e };
+}
+function readEst() { const o = {}; EST_KEYS.forEach(k => { const el = $('#e-' + k); o[k] = (k === 'mix' || k === 'blockT') ? el.value : num(el.value); }); return o; }
+TAB.mat = t => {
+  const v = estInputs(), f = (k, l, step = 'any', extra = '') => `<label>${l}<input id="e-${k}" type="number" step="${step}" min="0" value="${v[k]}" data-input="est" data-change="estsave" ${extra}></label>`;
+  t.innerHTML = `<div class="cols2"><div class="panel"><h3>Dimensions</h3><div class="row">
+    ${f('wallLen', 'Total wall length (m)')}${f('wallH', 'Wall height (m)')}${f('openings', 'Doors and windows area (m²)')}
+    <label>Block thickness<select id="e-blockT" data-input="est" data-change="estsave"><option value="150" ${v.blockT == 150 ? 'selected' : ''}>150 mm</option><option value="225" ${v.blockT == 225 ? 'selected' : ''}>225 mm</option></select></label>
+    ${f('slabArea', 'Slab area (m²)')}${f('slabT', 'Slab thickness (m)')}${f('foundVol', 'Foundation concrete (m³)')}
+    <label>Concrete mix<select id="e-mix" data-input="est" data-change="estsave">${['1:1.5:3', '1:2:4', '1:3:6'].map(m => `<option ${v.mix === m ? 'selected' : ''}>${m}</option>`).join('')}</select></label>
+    ${f('waste', 'Wastage (%)')}${f('rebar', 'Rebar (kg per m³ of concrete)')}</div>
+    <h3 style="margin-top:1rem">Unit prices (${esc(symOf(projCur()))})</h3><div class="row">
+    ${f('pBlock', 'Per block')}${f('pCement', 'Per 50 kg bag')}${f('pSand', 'Per m³ sand')}${f('pGranite', 'Per m³ granite')}${f('pRebar', 'Per kg rebar')}</div></div>
+    <div class="panel"><h3>Results</h3><div id="estout"></div></div></div>`;
+  estOut();
+};
+const QUAL = {
+  blocks: 'Check crushing strength against your local standard (often 2.5 to 3.5 N/mm² minimum). Reject cracked or crumbly blocks.',
+  cement: 'Check the bag date: use within 3 months. Reject bags with lumps or torn packaging. Store off the ground and dry.',
+  sand: 'Should be clean and sharp, free of clay, silt, salt and organic matter. Do a bottle test: silt layer under 6%.',
+  granite: 'Clean, angular, 19 to 20 mm for structural concrete. Free from dust and soft stones.',
+  rebar: 'Match the diameters on the structural drawing. Free of loose rust, oil and bends. Ask for mill test certificates.'
+};
+function estRows(i, r) {
+  return [['blocks', 'Sandcrete blocks', r.blocks, 'no', i.pBlock], ['cement', 'Cement', r.cement, 'bags (50 kg)', i.pCement], ['sand', 'Sharp sand', +r.sand.toFixed(1), 'm³', i.pSand], ['granite', 'Granite (aggregate)', +r.granite.toFixed(1), 'm³', i.pGranite], ['rebar', 'Reinforcement bars', r.rebar, 'kg', i.pRebar]];
+}
+function estOut() {
+  const i = readEst(), r = estimate(i), rows = estRows(i, r), cost = rows.reduce((a, x) => a + x[2] * x[4], 0);
+  $('#estout').innerHTML = `<p class="muted">Wall area ${fmt(r.wallArea)} m². Concrete volume ${fmt(r.conc)} m³.</p>
+  <div class="tw"><table><thead><tr><th>Material</th><th class="num">Quantity</th><th>Unit</th><th class="num">Cost</th></tr></thead><tbody>${rows.map(x => `<tr><td>${x[1]}</td><td class="num"><b>${fmt(x[2])}</b></td><td>${x[3]}</td><td class="num">${fmt(x[2] * x[4])}</td></tr>`).join('')}</tbody><tfoot><tr><th colspan="3">Estimated total</th><th class="num">${money(cost)}</th></tr></tfoot></table></div>
+  <p style="margin-top:.8rem"><button class="btn" data-act="toproc">Add to procurement list</button> <button class="btn ghost" data-act="pdf" data-k="mat">Download PDF</button></p>
+  <h3>Quality checks</h3><ul class="tips">${Object.values(QUAL).map(x => `<li>${x}</li>`).join('')}</ul>
+  <p class="muted">These are planning estimates using standard factors (about 9.25 blocks per m² of wall, 1.54 dry-volume factor for concrete, 28.8 bags of 50 kg per m³ of cement). Confirm quantities with your engineer or quantity surveyor before ordering.</p>`;
+}
+inputs.est = () => estOut();
+changes.estsave = async () => { try { await updateDoc(pref(), { est: readEst() }); } catch { } };
+acts.toproc = async () => {
+  const i = readEst(), rows = estRows(i, estimate(i));
+  if (!prem() && S.proc.length + rows.length > limitOf('proc')) return gate('proc', limitOf('proc')) || acts.upgrade();
+  try {
+    const b = writeBatch(db);
+    rows.forEach(x => b.set(doc(sub('procurement')), { name: x[1], unit: x[3], needed: x[2], delivered: 0, unitPrice: x[4], supplier: '', status: 'Needed', quality: 'Pending', createdAt: serverTimestamp() }));
+    await b.commit(); toast('Added to procurement.'); S.tab = 'proc'; renderProject();
+  } catch (e) { toast(friendly(e), true); }
+};
+
+/* ---------- Procurement ---------- */
+TAB.proc = t => {
+  const total = S.proc.reduce((a, x) => a + num(x.unitPrice) * num(x.needed), 0);
+  const sel = (id, f, cur, opts) => `<select data-change="procedit" data-id="${id}" data-f="${f}">${opts.map(o => `<option ${o === cur ? 'selected' : ''}>${o}</option>`).join('')}</select>`;
+  const inp = (x, f, type = 'number') => `<input type="${type}" ${type === 'number' ? 'step="any" min="0"' : ''} value="${esc(x[f])}" data-change="procedit" data-id="${x.id}" data-f="${f}" aria-label="${f}">`;
+  t.innerHTML = `<div class="panel"><form data-form="proc"><div class="row">
+    <label>Material<input name="name" required maxlength="60"></label><label>Unit<input name="unit" required maxlength="14"></label>
+    <label>Quantity needed<input name="needed" type="number" step="any" min="0" required></label><label>Unit price<input name="unitPrice" type="number" step="any" min="0" value="0"></label>
+    <label>Supplier<input name="supplier" maxlength="60"></label></div><button class="btn" type="submit">Add material</button> <button class="btn ghost" type="button" data-act="pdf" data-k="proc">Download PDF</button></form></div>
+  <div class="panel" style="margin-top:1rem"><div class="tw"><table><thead><tr><th>Material</th><th>Needed</th><th>Delivered</th><th>Unit price</th><th>Supplier</th><th>Status</th><th>Quality</th><th></th></tr></thead><tbody>
+  ${S.proc.map(x => { const sh = x.status === 'Delivered' && num(x.delivered) < num(x.needed); return `<tr><td><b>${esc(x.name)}</b><br><span class="muted">${esc(x.unit)}</span>${sh ? `<br><span class="chip bad">Short by ${fmt(num(x.needed) - num(x.delivered))}</span>` : ''}</td><td>${inp(x, 'needed')}</td><td>${inp(x, 'delivered')}</td><td>${inp(x, 'unitPrice')}</td><td>${inp(x, 'supplier', 'text')}</td><td>${sel(x.id, 'status', x.status, ['Needed', 'Ordered', 'Delivered'])}</td><td>${sel(x.id, 'quality', x.quality, ['Pending', 'Passed', 'Failed'])}</td><td><button class="btn sm danger" data-act="delproc" data-id="${x.id}">Remove</button></td></tr>`; }).join('') || '<tr><td colspan="8" class="muted">No materials yet. Add one above or send them from the Materials tab.</td></tr>'}
+  </tbody><tfoot><tr><th colspan="3">Total value of needed materials</th><th class="num" colspan="5">${money(total)}</th></tr></tfoot></table></div></div>`;
+};
+forms.proc = async f => {
+  if (!gate('proc', S.proc.length)) return;
+  try { await addDoc(sub('procurement'), { name: f.name.value.trim(), unit: f.unit.value.trim(), needed: num(f.needed.value), delivered: 0, unitPrice: num(f.unitPrice.value), supplier: f.supplier.value.trim(), status: 'Needed', quality: 'Pending', createdAt: serverTimestamp() }); } catch (e) { toast(friendly(e), true); }
+};
+changes.procedit = async (el, d) => {
+  const isNum = ['needed', 'delivered', 'unitPrice'].includes(d.f);
+  try { await updateDoc(doc(db, 'users', S.user.uid, 'projects', S.projectId, 'procurement', d.id), { [d.f]: isNum ? Math.max(0, num(el.value)) : el.value }); } catch (e) { toast(friendly(e), true); }
+};
+acts.delproc = async d => { try { await deleteDoc(doc(db, 'users', S.user.uid, 'projects', S.projectId, 'procurement', d.id)); } catch (e) { toast(friendly(e), true); } };
+
+/* ---------- Land and risk ---------- */
+const LAND_OPTS = { water: [['low', 'Low (deeper than 3 m)'], ['medium', 'Medium (1.5 to 3 m)'], ['high', 'High (shallower than 1.5 m)']], slope: [['flat', 'Flat'], ['moderate', 'Moderate'], ['steep', 'Steep']], flood: [['no', 'No'], ['yes', 'Yes']] };
+TAB.land = t => {
+  const p = S.project, opt = k => LAND_OPTS[k].map(([v, l]) => `<option value="${v}" ${p[k] === v ? 'selected' : ''}>${l}</option>`).join('');
+  t.innerHTML = `<div class="cols2"><div class="panel"><h3>Site conditions</h3>
+    <label>Soil type<select id="l-soil" data-input="land" data-change="landsave">${Object.entries(SOILS).map(([k, v]) => `<option value="${k}" ${p.soil === k ? 'selected' : ''}>${v.n}</option>`).join('')}</select></label>
+    <label>Water table<select id="l-water" data-input="land" data-change="landsave">${opt('water')}</select></label>
+    <label>Slope<select id="l-slope" data-input="land" data-change="landsave">${opt('slope')}</select></label>
+    <label>Flood-prone plot<select id="l-flood" data-input="land" data-change="landsave">${opt('flood')}</select></label>
+    <p class="muted">Upload photos of the land in Progress and photos (choose the type Land) to keep a record of the site.</p></div>
+    <div class="panel" id="riskout"></div></div><div class="panel" style="margin-top:1rem" id="advice"></div>`;
+  landOut();
+};
+const readLand = () => ({ ...S.project, soil: $('#l-soil').value, water: $('#l-water').value, slope: $('#l-slope').value, flood: $('#l-flood').value });
+function landOut() {
+  const p = readLand(), r = riskOf(p), s = SOILS[p.soil];
+  $('#riskout').innerHTML = `<h3>Risk score</h3><div style="display:flex;align-items:baseline;gap:.8rem"><span class="price">${r.score}</span><span class="chip ${r.cls}">${r.level} risk</span></div>
+  <div class="gauge"><i style="left:${r.score}%"></i></div>
+  <ul class="tips">${r.factors.length ? r.factors.map(x => `<li>${esc(x.txt)} <span class="muted">(+${x.pts})</span></li>`).join('') : '<li>No risk factors recorded.</li>'}</ul>`;
+  $('#advice').innerHTML = `<h3>${s.n}: what to know</h3><p><b>Typical bearing capacity:</b> ${s.bearing}.<br><b>Suggested foundation:</b> ${s.found}</p>` + (prem()
+    ? `<h3>Risks</h3><ul class="tips">${s.risks.map(x => `<li>${x}</li>`).join('')}</ul><h3>Recommended actions</h3><ul class="tips">${[...s.actions, ...(p.water === 'high' ? ['High water table: dewater trenches, place concrete the same day and use a waterproof damp-proof membrane.'] : []), ...(p.slope === 'steep' ? ['Steep slope: build retaining walls or step the foundation, and design drainage uphill of the building.'] : []), ...(p.flood === 'yes' ? ['Flood-prone: raise the floor level above the highest known flood mark and keep services above it.'] : [])].map(x => `<li>${x}</li>`).join('')}</ul><h3>Materials guidance</h3><ul class="tips">${s.mats.map(x => `<li>${x}</li>`).join('')}</ul>`
+    : `<p class="muted">Premium shows the full risk list, recommended actions and materials guidance for this soil. <button class="link" data-act="upgrade">See premium</button></p>`)
+    + `<p class="muted">This is preliminary guidance. Commission a soil investigation and have a licensed engineer approve the foundation design.</p><button class="btn ghost" data-act="pdf" data-k="land">Download PDF</button>`;
+}
+inputs.land = () => landOut();
+changes.landsave = async () => { const p = readLand(); try { await updateDoc(pref(), { soil: p.soil, water: p.water, slope: p.slope, flood: p.flood }); } catch (e) { toast(friendly(e), true); } };
+
+/* ---------- Progress and photos ---------- */
+TAB.prog = t => {
+  const p = S.project, pg = progressOf(p), lim = limitOf('photos');
+  t.innerHTML = `<div class="cols2"><div class="panel"><h3>Build stages</h3><p><button class="btn ghost sm" data-act="pdf" data-k="prog">Download PDF</button></p><p class="muted">Overall: <b id="pgtotal">${Math.round(pg)}%</b></p><div class="bar" style="margin-bottom:1rem"><i id="pgbar" style="width:${pg}%"></i></div>
+    ${STAGES.map(s => { const v = p.stages?.[s.k] || 0; return `<div class="stage"><span>${s.n} <span class="muted">(weight ${s.w}%)</span></span><input type="range" min="0" max="100" step="5" value="${v}" data-input="stage" data-change="stagesave" data-k="${s.k}" aria-label="${s.n}"><output>${v}%</output></div>`; }).join('')}</div>
+    <div class="panel"><h3>Upload a photo</h3><form data-form="photo"><label>Photo<input name="file" type="file" accept="image/*" required></label>
+    <div class="row"><label>Type<select name="type"><option>Progress</option><option>Land</option><option>Materials</option><option>Defect</option></select></label><label>Note<input name="caption" maxlength="120"></label></div>
+    <button class="btn" type="submit" id="photobtn">Upload photo</button> <span class="muted" id="photopct"></span></form>
+    <p class="muted" style="margin-top:.8rem">${S.photos.length}${isFinite(lim) ? ' of ' + lim : ''} photos used. Photos are compressed to about 350 KB each and saved with your project.</p></div></div>
+    <div class="panel" style="margin-top:1rem"><h3>Photo log</h3><div class="gallery">${S.photos.map(x => `<figure><button class="link" style="display:block;width:100%" data-act="viewimg" data-src="photo" data-id="${x.id}" aria-label="View photo larger"><img src="${esc(x.url)}" alt="${esc(x.type)} photo" loading="lazy"></button><figcaption><span class="chip">${esc(x.type)}</span> <span class="muted">${dstr(x.createdAt)}</span><br>${esc(x.caption || '')}<br><button class="link" data-act="delphoto" data-id="${x.id}">Delete</button></figcaption></figure>`).join('') || '<p class="muted">No photos yet.</p>'}</div></div>`;
+};
+inputs.stage = (el, d) => {
+  el.nextElementSibling.textContent = el.value + '%';
+  const stages = { ...(S.project.stages || {}) }; $$('[data-input=stage]').forEach(x => stages[x.dataset.k] = +x.value);
+  const pg = progressOf({ stages }); $('#pgtotal').textContent = Math.round(pg) + '%'; $('#pgbar').style.width = pg + '%';
+};
+changes.stagesave = async () => { const stages = {}; $$('[data-input=stage]').forEach(x => stages[x.dataset.k] = +x.value); try { await updateDoc(pref(), { stages }); } catch (e) { toast(friendly(e), true); } };
+forms.photo = async f => {
+  if (!gate('photos', S.photos.length)) return;
+  const file = f.file.files[0]; if (!file) return; const btn = $('#photobtn'); btn.disabled = true;
+  try {
+    const url = await toDataUrl(file);
+    const save = addDoc(sub('photos'), { url, type: f.type.value, caption: f.caption.value.trim(), createdAt: serverTimestamp() });
+    await Promise.race([save, new Promise((_, rej) => setTimeout(() => rej(new Error('Saving took too long. Check your connection and try again.')), 45000))]);
+    toast('Photo uploaded.'); f.reset();
+  } catch (e) { toast(friendly(e), true); }
+  btn.disabled = false; if ($('#photopct')) $('#photopct').textContent = '';
+};
+acts.viewimg = d => {
+  const x = d.src === 'receipt' ? S.admin?.payments?.find(p => p.id === d.id) : S.photos.find(p => p.id === d.id);
+  const url = x?.receiptUrl || x?.url; if (!url) return;
+  modal(`<img src="${esc(url)}" alt="Full size image" style="width:100%;border-radius:4px"><p style="margin:.8rem 0 0"><button class="btn" data-act="close">Close</button></p>`);
+};
+acts.delphoto = async d => {
+  const x = S.photos.find(p => p.id === d.id); if (!x || !confirm('Delete this photo?')) return;
+  try { if (x.path) await deleteObject(ref(storage, x.path)).catch(() => { }); await deleteDoc(doc(db, 'users', S.user.uid, 'projects', S.projectId, 'photos', d.id)); } catch (e) { toast(friendly(e), true); }
+};
+
+/* ============ UPGRADE & PAYMENTS ============ */
+let unsubMyPay = null;
+acts.upgrade = () => {
+  closeProject(); S.admin = null;
+  $('#main').innerHTML = `<h2>Go premium</h2><div class="cols2"><div class="panel" id="paypanel"></div>
+    <div class="panel"><h3>Your payments</h3><div id="mypay" class="muted">Loading...</div></div></div>`;
+  renderPayPanel(S.payCur || curList()[0].code);
+  unsubMyPay?.(); unsubMyPay = onSnapshot(query(collection(db, 'payments'), where('uid', '==', S.user.uid)), snap => {
+    S.myPay = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, z) => (z.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
+    const h = $('#mypay'); if (!h) return;
+    h.innerHTML = S.myPay.length ? `<div class="tw"><table><thead><tr><th>Date</th><th>Amount</th><th>Status</th><th></th></tr></thead><tbody>${S.myPay.map(r => `<tr><td>${dstr(r.createdAt)}</td><td>${esc(r.symbol || r.currency)}${fmt(r.amount)} <span class="muted">${esc(r.currency)}, ${r.months == 12 ? 'yearly' : 'monthly'}</span></td><td><span class="chip ${r.status === 'confirmed' ? 'ok' : r.status === 'rejected' ? 'bad' : 'warn'}">${r.status}</span></td><td>${r.status === 'confirmed' ? `<button class="btn sm ghost" data-act="receipt" data-id="${r.id}">Receipt PDF</button>` : ''}</td></tr>`).join('')}</tbody></table></div>` : 'No payments yet.';
+  });
+};
+function renderPayPanel(code) {
+  const h = $('#paypanel'); if (!h) return;
+  const c = curOf(code), b = (S.payment?.accounts || {})[c.code] || {}; S.payCur = c.code;
+  h.innerHTML = `<h3>${prem() ? 'Extend your premium plan' : 'Choose a plan'}</h3>
+    <p class="muted">Pay by bank transfer in the currency you prefer, then submit your payment details. An administrator confirms it and activates premium.</p>
+    <label>Currency<select data-change="paycur">${curList().map(x => `<option value="${esc(x.code)}" ${x.code === c.code ? 'selected' : ''}>${esc(x.code)} (${esc(x.symbol)})</option>`).join('')}</select></label>
+    <div class="panel" style="background:#F3F6F8;margin-bottom:1rem"><b>Transfer ${esc(c.code)} to</b><br>Bank: ${esc(b.bankName || 'Not set yet')}<br>Account name: ${esc(b.accountName || 'Not set yet')}<br>Account number: <b>${esc(b.accountNumber || 'Not set yet')}</b>${b.note ? `<br><span class="muted">${esc(b.note)}</span>` : ''}</div>
+    <form data-form="pay"><input type="hidden" name="cur" value="${esc(c.code)}">
+    <label>Plan<select name="months"><option value="1">Monthly: ${esc(c.symbol)}${fmt(c.monthly)}</option><option value="12">Yearly: ${esc(c.symbol)}${fmt(c.yearly)}</option></select></label>
+    <label>Payment reference or depositor name<input name="reference" required maxlength="80"></label>
+    <label>Receipt (photo or screenshot, optional)<input name="file" type="file" accept="image/*"></label>
+    <button class="btn" type="submit" id="paybtn">Submit payment</button></form>`;
+}
+changes.paycur = el => renderPayPanel(el.value);
+forms.pay = async f => {
+  const c = curOf(f.cur.value), months = +f.months.value, amount = months === 12 ? c.yearly : c.monthly, btn = $('#paybtn'); btn.disabled = true;
+  try {
+    let receiptUrl = '', receiptPath = ''; const file = f.file.files[0];
+    if (file) receiptUrl = await toDataUrl(file, 300000);
+    await addDoc(collection(db, 'payments'), { uid: S.user.uid, email: S.user.email, name: S.profile.name || '', amount, currency: c.code, symbol: c.symbol, months, reference: f.reference.value.trim(), receiptUrl, receiptPath, status: 'pending', createdAt: serverTimestamp() });
+    toast('Payment submitted. You will get premium once it is confirmed.'); f.reset();
+  } catch (e) { toast(friendly(e), true); }
+  btn.disabled = false;
+};
+
+/* ============ ADMIN PANEL ============ */
+const ATABS = [['overview', 'Overview'], ['users', 'Users'], ['payments', 'Payments'], ['settings', 'Pricing and account']];
+acts.admin = () => {
+  if (S.profile?.role !== 'admin') return;
+  closeProject(); S.admin = { users: [], payments: [], unsubs: [] };
+  S.admin.unsubs.push(onSnapshot(collection(db, 'users'), s => { S.admin.users = s.docs.map(d => ({ id: d.id, ...d.data() })); renderAdmin(false); }, e => toast(friendly(e), true)));
+  S.admin.unsubs.push(onSnapshot(query(collection(db, 'payments'), orderBy('createdAt', 'desc')), s => { S.admin.payments = s.docs.map(d => ({ id: d.id, ...d.data() })); renderAdmin(false); }, e => toast(friendly(e), true)));
+  renderAdmin(true);
+};
+const prevHome = acts.home; acts.home = d => { S.admin?.unsubs.forEach(u => u()); prevHome(d); };
+function renderAdmin(force) {
+  if (!S.admin) return; const m = $('#main');
+  if (force || !$('#atab')) m.innerHTML = `<h2>Admin panel</h2><nav class="tabs">${ATABS.map(([k, n]) => `<button data-act="atab" data-k="${k}" aria-selected="${k === S.adminTab}">${n}</button>`).join('')}</nav><section id="atab"></section>`;
+  const a = document.activeElement, t = $('#atab'); if (!force && S.adminTab === 'settings') return; if (!force && t.contains(a) && /INPUT|TEXTAREA|SELECT/.test(a.tagName)) return;
+  ATAB[S.adminTab](t);
+}
+acts.atab = d => { S.adminTab = d.k; S.admin.draft = null; $$('.tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.k === d.k)); renderAdmin(true); };
+const ATAB = {};
+ATAB.overview = t => {
+  const u = S.admin.users, now = Date.now(), pr = u.filter(x => x.plan === 'premium' && x.planExpiry?.toMillis?.() > now).length, pend = S.admin.payments.filter(x => x.status === 'pending');
+  const rv = {}; S.admin.payments.filter(x => x.status === 'confirmed').forEach(x => { const k = x.currency || '?'; rv[k] = (rv[k] || 0) + num(x.amount); });
+  const revTxt = Object.entries(rv).map(([k, v]) => `${esc(k)} ${fmt(v)}`).join('<br>') || '0';
+  t.innerHTML = `<div class="stats"><div class="panel stat"><span class="muted">Users</span><b>${u.length}</b></div><div class="panel stat"><span class="muted">Active premium</span><b>${pr}</b></div><div class="panel stat"><span class="muted">Pending payments</span><b>${pend.length}</b></div><div class="panel stat"><span class="muted">Confirmed revenue</span><b style="font-size:1.5rem;line-height:1.2">${revTxt}</b></div></div>
+  ${pend.length ? `<div class="panel"><b>${pend.length} payment(s) waiting for confirmation.</b> <button class="link" data-act="atab" data-k="payments">Review payments</button></div>` : ''}`;
+};
+ATAB.users = t => {
+  const now = Date.now();
+  t.innerHTML = `<div class="panel tw"><table><thead><tr><th>Name</th><th>Email</th><th>Plan</th><th>Status</th><th>Actions</th></tr></thead><tbody>${S.admin.users.sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0)).map(u => {
+    const isP = u.plan === 'premium' && u.planExpiry?.toMillis?.() > now, me = u.id === S.user.uid;
+    return `<tr><td>${esc(u.name)}${u.role === 'admin' ? ' <span class="chip pro">admin</span>' : ''}</td><td>${esc(u.email)}</td><td>${isP ? `<span class="chip pro">Premium</span> until ${dstr(u.planExpiry)}` : '<span class="chip">Free</span>'}</td><td><span class="chip ${u.status === 'active' ? 'ok' : 'bad'}">${esc(u.status)}</span></td>
+    <td>${me ? '<span class="muted">You</span>' : `<button class="btn sm" data-act="u-grant" data-id="${u.id}">Grant premium</button> ${isP ? `<button class="btn sm ghost" data-act="u-free" data-id="${u.id}">Set free</button>` : ''} <button class="btn sm ${u.status === 'active' ? 'danger' : ''}" data-act="u-status" data-id="${u.id}">${u.status === 'active' ? 'Suspend' : 'Reactivate'}</button>`}</td></tr>`;
+  }).join('') || '<tr><td colspan="5" class="muted">No users yet.</td></tr>'}</tbody></table></div>`;
+};
+const uref = id => doc(db, 'users', id);
+acts['u-status'] = async d => { const u = S.admin.users.find(x => x.id === d.id); const to = u.status === 'active' ? 'suspended' : 'active'; if (!confirm(`${to === 'suspended' ? 'Suspend' : 'Reactivate'} ${u.email}?`)) return; try { await updateDoc(uref(d.id), { status: to }); toast('User ' + to + '.'); } catch (e) { toast(friendly(e), true); } };
+acts['u-free'] = async d => { if (!confirm('Move this user to the free plan now?')) return; try { await updateDoc(uref(d.id), { plan: 'free', planExpiry: null }); toast('User moved to free.'); } catch (e) { toast(friendly(e), true); } };
+acts['u-grant'] = async d => {
+  const days = parseInt(prompt('Grant premium for how many days?', '30'), 10); if (!days || days < 1) return;
+  const u = S.admin.users.find(x => x.id === d.id), base = Math.max(Date.now(), u.planExpiry?.toMillis?.() || 0);
+  try { await updateDoc(uref(d.id), { plan: 'premium', planExpiry: Timestamp.fromMillis(base + days * 864e5) }); toast('Premium granted.'); } catch (e) { toast(friendly(e), true); }
+};
+ATAB.payments = t => {
+  t.innerHTML = `<p><button class="btn" data-act="pdf" data-k="payments">Download payments report (PDF)</button></p><div class="panel tw"><table><thead><tr><th>Date</th><th>User</th><th>Amount</th><th>Reference</th><th>Receipt</th><th>Status</th><th></th></tr></thead><tbody>${S.admin.payments.map(p => `<tr><td>${dstr(p.createdAt)}</td><td>${esc(p.name)}<br><span class="muted">${esc(p.email)}</span></td><td>${esc(p.symbol || p.currency)}${fmt(p.amount)} <span class="muted">${esc(p.currency)}</span><br><span class="muted">${p.months == 12 ? 'Yearly' : 'Monthly'}</span></td><td>${esc(p.reference)}</td><td>${p.receiptUrl ? `<button class="link" data-act="viewimg" data-src="receipt" data-id="${p.id}">View</button>` : '<span class="muted">None</span>'}</td><td><span class="chip ${p.status === 'confirmed' ? 'ok' : p.status === 'rejected' ? 'bad' : 'warn'}">${p.status}</span></td>
+  <td>${p.status === 'pending' ? `<button class="btn sm" data-act="pay-ok" data-id="${p.id}">Confirm</button> <button class="btn sm danger" data-act="pay-no" data-id="${p.id}">Reject</button>` : (p.status === 'confirmed' ? `<button class="btn sm ghost" data-act="receipt" data-id="${p.id}">Receipt PDF</button>` : '')}</td></tr>`).join('') || '<tr><td colspan="7" class="muted">No payments yet.</td></tr>'}</tbody></table></div>`;
+};
+acts['pay-ok'] = async d => {
+  const p = S.admin.payments.find(x => x.id === d.id); if (!p || !confirm(`Confirm ${p.symbol || p.currency}${fmt(p.amount)} from ${p.email} and activate premium?`)) return;
+  const u = S.admin.users.find(x => x.id === p.uid), base = Math.max(Date.now(), u?.planExpiry?.toMillis?.() || 0), exp = Timestamp.fromMillis(base + p.months * 30 * 864e5);
+  try {
+    const b = writeBatch(db);
+    b.update(doc(db, 'payments', d.id), { status: 'confirmed', confirmedAt: serverTimestamp(), confirmedBy: S.user.uid });
+    b.update(uref(p.uid), { plan: 'premium', planExpiry: exp }); await b.commit(); toast('Payment confirmed and premium activated.');
+  } catch (e) { toast(friendly(e), true); }
+};
+acts['pay-no'] = async d => { if (!confirm('Reject this payment?')) return; try { await updateDoc(doc(db, 'payments', d.id), { status: 'rejected', confirmedBy: S.user.uid }); toast('Payment rejected.'); } catch (e) { toast(friendly(e), true); } };
+ATAB.settings = t => {
+  const s = S.settings, L = s.limits, b = S.payment?.accounts || {};
+  if (!S.admin.draft) S.admin.draft = s.currencies.map(c => ({ ...c, acct: { bankName: '', accountName: '', accountNumber: '', note: '', ...(b[c.code] || {}) } }));
+  const D = S.admin.draft;
+  t.innerHTML = `<form data-form="settings">
+  <div class="panel"><h3>Currencies, prices and payment accounts</h3><p class="muted" style="margin:0">Each currency has its own premium price and its own bank account. Users pick the currency when they pay.</p></div>
+  ${D.map((c, i) => `<div class="panel" style="margin-top:1rem"><h3>${esc(c.code)}</h3>
+    <div class="row"><label>Symbol<input name="sym${i}" value="${esc(c.symbol)}" maxlength="4" required></label>
+    <label>Monthly price<input name="mo${i}" type="number" step="any" min="0" value="${c.monthly}" required></label>
+    <label>Yearly price<input name="yr${i}" type="number" step="any" min="0" value="${c.yearly}" required></label></div>
+    <div class="row"><label>Bank name<input name="bk${i}" value="${esc(c.acct.bankName)}" maxlength="80"></label>
+    <label>Account name<input name="an${i}" value="${esc(c.acct.accountName)}" maxlength="80"></label>
+    <label>Account number<input name="no${i}" value="${esc(c.acct.accountNumber)}" maxlength="40"></label></div>
+    <label>Note to payers (optional)<input name="nt${i}" value="${esc(c.acct.note)}" maxlength="300"></label>
+    ${D.length > 1 ? `<button class="btn sm danger" type="button" data-act="rmcur" data-i="${i}">Remove ${esc(c.code)}</button>` : ''}</div>`).join('')}
+  <p style="margin-top:1rem"><button class="btn ghost" type="button" data-act="addcur">Add currency</button></p>
+  <div class="panel"><h3>Free plan limits</h3><div class="row"><label>Projects<input name="projects" type="number" min="0" value="${L.projects}"></label><label>Rooms per plan<input name="rooms" type="number" min="0" value="${L.rooms}"></label><label>Measurement items<input name="boq" type="number" min="0" value="${L.boq}"></label><label>Procurement items<input name="proc" type="number" min="0" value="${L.proc}"></label><label>Photos per project<input name="photos" type="number" min="0" value="${L.photos}"></label></div></div>
+  <p style="margin-top:1rem"><button class="btn" type="submit">Save settings</button></p></form>`;
+};
+function syncDraft(f) {
+  S.admin.draft.forEach((c, i) => { c.symbol = f['sym' + i].value; c.monthly = num(f['mo' + i].value); c.yearly = num(f['yr' + i].value); c.acct = { bankName: f['bk' + i].value, accountName: f['an' + i].value, accountNumber: f['no' + i].value, note: f['nt' + i].value }; });
+}
+acts.addcur = () => {
+  syncDraft($('[data-form=settings]'));
+  const code = (prompt('Currency code, 3 letters (for example GHS, KES, GBP, EUR)') || '').trim().toUpperCase();
+  if (!/^[A-Z]{3}$/.test(code)) return code && toast('Use a 3-letter currency code.', true);
+  if (S.admin.draft.some(c => c.code === code)) return toast('That currency is already in the list.', true);
+  const symbol = (prompt('Currency symbol', code) || code).trim().slice(0, 4);
+  S.admin.draft.push({ code, symbol, monthly: 0, yearly: 0, acct: { bankName: '', accountName: '', accountNumber: '', note: '' } });
+  renderAdmin(true);
+};
+acts.rmcur = d => {
+  syncDraft($('[data-form=settings]')); const c = S.admin.draft[+d.i];
+  if (!confirm(`Remove ${c.code}? Users will no longer be able to pay in it. Existing payment records are kept.`)) return;
+  S.admin.draft.splice(+d.i, 1); renderAdmin(true);
+};
+forms.settings = async f => {
+  syncDraft(f); const D = S.admin.draft, L = {};
+  ['projects', 'rooms', 'boq', 'proc', 'photos'].forEach(k => L[k] = Math.max(0, parseInt(f[k].value, 10) || 0));
+  const currencies = D.map(c => ({ code: c.code, symbol: c.symbol.trim() || c.code, monthly: c.monthly, yearly: c.yearly })), accounts = {};
+  D.forEach(c => accounts[c.code] = { bankName: c.acct.bankName.trim(), accountName: c.acct.accountName.trim(), accountNumber: c.acct.accountNumber.trim(), note: c.acct.note.trim() });
+  try {
+    await setDoc(doc(db, 'settings', 'public'), { currencies, limits: L });
+    await setDoc(doc(db, 'settings', 'payment'), { accounts });
+    toast('Settings saved. Changes are live for all users.');
+  } catch (e) { toast(friendly(e), true); }
+};
+
+/* ============ PDF REPORTS ============ */
+const PDF_PREMIUM_ONLY = false; // set to true to make PDF downloads a premium feature
+const PW = 595, PH = 842, MX = 40;
+const clean = v => String(v ?? '').replace(/[^\x20-\x7E\u00A0-\u00FF]/g, '');
+function newPdf(title) {
+  if (PDF_PREMIUM_ONLY && !prem()) { toast('PDF reports are a premium feature.', true); acts.upgrade(); return null; }
+  const J = window.jspdf?.jsPDF;
+  if (!J || !J.API?.autoTable) { toast('PDF tools are still loading. Check your connection and try again.', true); return null; }
+  const d = new J({ unit: 'pt', format: 'a4' }); d.setProperties({ title: clean(title) }); d._y = 100;
+  d.setFillColor(16, 37, 58); d.rect(0, 0, PW, 70, 'F'); d.setTextColor(255, 255, 255);
+  d.setFont('helvetica', 'bold'); d.setFontSize(20); d.text('Plotwise', MX, 32);
+  d.setFont('helvetica', 'normal'); d.setFontSize(12); d.text(clean(title), MX, 54);
+  d.setTextColor(16, 37, 58); return d;
+}
+function finishPdf(d, name) {
+  const n = d.getNumberOfPages();
+  for (let i = 1; i <= n; i++) { d.setPage(i); d.setFont('helvetica', 'normal'); d.setFontSize(8); d.setTextColor(90, 110, 128); d.text(`Generated ${new Date().toLocaleDateString()}   |   Powered by Step By Step Digital   |   Page ${i} of ${n}`, PW / 2, PH - 20, { align: 'center' }); }
+  d.save(clean(name).replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase() + '.pdf');
+}
+const need = (d, h) => { if (d._y + h > PH - 50) { d.addPage(); d._y = 50; } };
+function H(d, t) { need(d, 44); d.setFont('helvetica', 'bold'); d.setFontSize(13); d.setTextColor(16, 37, 58); d.text(clean(t), MX, d._y); d._y += 7; d.setDrawColor(242, 106, 27); d.setLineWidth(1.5); d.line(MX, d._y, MX + 40, d._y); d._y += 16; }
+function P(d, t, size = 10) { d.setFont('helvetica', 'normal'); d.setFontSize(size); d.setTextColor(40, 40, 40); d.splitTextToSize(clean(t), PW - 2 * MX).forEach(l => { need(d, 14); d.text(l, MX, d._y); d._y += 13; }); d._y += 6; }
+const BL = (d, a) => a.forEach(x => P(d, '- ' + x));
+function T(d, head, body, foot, right = []) {
+  need(d, 60); const cs = {}; right.forEach(i => cs[i] = { halign: 'right' });
+  d.autoTable({ startY: d._y, head: [head.map(clean)], body: body.map(r => r.map(clean)), foot: foot ? [foot.map(clean)] : undefined, theme: 'grid', styles: { fontSize: 9, cellPadding: 4, textColor: [30, 30, 30] }, headStyles: { fillColor: [16, 37, 58], textColor: 255 }, footStyles: { fillColor: [232, 238, 242], textColor: [16, 37, 58] }, columnStyles: cs, margin: { left: MX, right: MX, bottom: 50 } });
+  d._y = d.lastAutoTable.finalY + 16;
+}
+const M = n => `${projCur()} ${fmt(n)}`;
+
+function secSummary(d) {
+  const p = S.project, r = riskOf(p); H(d, 'Project summary');
+  T(d, ['Item', 'Detail'], [['Project', p.name], ['Location', p.location || '-'], ['Currency', projCur()], ['Budget', num(p.budget) ? M(p.budget) : 'Not set'], ['Estimated cost (measurements)', M(boqTotal())], ['Overall progress', Math.round(progressOf(p)) + '%'], ['Soil', SOILS[p.soil]?.n || '-'], ['Risk', `${r.score} / 100 (${r.level})`], ['Dates', `${p.startDate || 'not set'} to ${p.endDate || 'not set'}`], ['Photos on record', String(S.photos.length)]]);
+}
+function secPlan(d) {
+  ensurePlan(); const R = S.plan.rooms; H(d, 'Building plan');
+  if (!R.length) return P(d, 'No rooms have been drawn yet.');
+  const cv = sheetCanvas(), w = PW - 2 * MX, h = w * 1000 / 1400; need(d, h + 12);
+  d.addImage(cv.toDataURL('image/jpeg', .92), 'JPEG', MX, d._y, w, h); d._y += h + 12;
+  const st = planStats();
+  T(d, ['Room', 'Type', 'Length (m)', 'Width (m)', 'Area (m²)'], R.map(r => [r.name, r.type, fmt(r.w), fmt(r.h), fmt(r.w * r.h)]), ['Total built area', '', '', '', fmt(st.area)], [2, 3, 4]);
+  P(d, `Plot ${fmt(S.plan.plot.w)} x ${fmt(S.plan.plot.h)} m. Net wall length ${fmt(st.walls)} m, with shared walls counted once.`);
+}
+function secBoq(d) {
+  H(d, 'Measurements and rates'); if (!S.boq.length) return P(d, 'No measurement items recorded.');
+  T(d, ['Description', 'Unit', 'Quantity', 'Rate', 'Amount'], S.boq.map(r => [r.desc, r.unit, fmt(r.qty), fmt(r.rate), fmt(r.amount)]), ['Total', '', '', '', M(boqTotal())], [2, 3, 4]);
+  const b = num(S.project.budget), t = boqTotal(); if (b > 0) P(d, t <= b ? `Budget ${M(b)}: ${M(b - t)} remaining.` : `Budget ${M(b)}: estimate is ${M(t - b)} over budget.`);
+}
+function secMat(d) {
+  const i = $('#e-wallLen') ? readEst() : estInputs(), r = estimate(i), rows = estRows(i, r), total = rows.reduce((a, x) => a + x[2] * x[4], 0);
+  H(d, 'Materials estimate'); P(d, `Wall area ${fmt(r.wallArea)} m². Concrete volume ${fmt(r.conc)} m³. Mix ${i.mix}. Wastage ${i.waste}%.`);
+  T(d, ['Material', 'Quantity', 'Unit', 'Unit price', 'Cost'], rows.map(x => [x[1], fmt(x[2]), x[3], fmt(x[4]), fmt(x[2] * x[4])]), ['Estimated total', '', '', '', M(total)], [1, 3, 4]);
+  H(d, 'Quality checks'); BL(d, Object.values(QUAL));
+  P(d, 'These are planning estimates. Confirm quantities with your engineer or quantity surveyor before ordering.', 9);
+}
+function secProc(d) {
+  H(d, 'Procurement'); if (!S.proc.length) return P(d, 'No materials on the procurement list.');
+  const total = S.proc.reduce((a, x) => a + num(x.unitPrice) * num(x.needed), 0);
+  T(d, ['Material', 'Needed', 'Delivered', 'Unit price', 'Supplier', 'Status', 'Quality'], S.proc.map(x => [`${x.name} (${x.unit})`, fmt(x.needed), fmt(x.delivered), fmt(x.unitPrice), x.supplier || '-', x.status, x.quality]), ['Total value of needed materials', '', '', '', '', '', M(total)], [1, 2, 3]);
+  const sh = S.proc.filter(x => x.status === 'Delivered' && num(x.delivered) < num(x.needed)); if (sh.length) P(d, 'Short deliveries: ' + sh.map(x => `${x.name} (short by ${fmt(num(x.needed) - num(x.delivered))} ${x.unit})`).join('; ') + '.');
+}
+function secLand(d) {
+  const p = S.project, r = riskOf(p), s = SOILS[p.soil]; H(d, 'Land and risk');
+  T(d, ['Condition', 'Value'], [['Soil', s.n], ['Water table', p.water], ['Slope', p.slope], ['Flood-prone', p.flood], ['Risk score', `${r.score} / 100 (${r.level})`]]);
+  if (r.factors.length) { P(d, 'Risk factors:'); BL(d, r.factors.map(x => `${x.txt} (+${x.pts})`)); }
+  P(d, `Typical bearing capacity: ${s.bearing}.`); P(d, `Suggested foundation: ${s.found}`);
+  if (prem()) { H(d, 'Risks'); BL(d, s.risks); H(d, 'Recommended actions'); BL(d, s.actions); H(d, 'Materials guidance'); BL(d, s.mats); }
+  else P(d, 'Full risks, recommended actions and materials guidance are included in the premium plan.');
+  P(d, 'This is preliminary guidance. Commission a soil investigation and have a licensed engineer approve the foundation design.', 9);
+}
+function secProg(d) {
+  const p = S.project; H(d, 'Progress');
+  T(d, ['Stage', 'Weight', 'Complete'], STAGES.map(s => [s.n, s.w + '%', (p.stages?.[s.k] || 0) + '%']), ['Overall', '100%', Math.round(progressOf(p)) + '%'], [1, 2]);
+  if (S.photos.length) T(d, ['Date', 'Type', 'Note'], S.photos.map(x => [dstr(x.createdAt), x.type, x.caption || '-']));
+}
+const REPORTS = { full: ['Project report', [secSummary, secPlan, secBoq, secMat, secProc, secLand, secProg]], plan: ['Building plan', [secPlan]], boq: ['Measurements and rates', [secBoq]], mat: ['Materials estimate', [secMat]], proc: ['Procurement report', [secProc]], land: ['Land and risk report', [secLand]], prog: ['Progress report', [secProg]] };
+acts.pdf = d => {
+  try {
+    if (d.k === 'payments') return paymentsPdf();
+    const R = REPORTS[d.k]; if (!R || !S.project) return;
+    const doc = newPdf(`${R[0]}: ${S.project.name}`); if (!doc) return;
+    if (d.k !== 'full') P(doc, `Project: ${S.project.name}${S.project.location ? ' (' + S.project.location + ')' : ''}`, 11);
+    R[1].forEach(f => f(doc)); finishPdf(doc, `${S.project.name}-${d.k}`); toast('PDF downloaded.');
+  } catch (e) { console.error(e); toast('Could not create the PDF: ' + (e.message || e), true); }
+};
+acts.receipt = d => {
+  try {
+    const p = [...(S.myPay || []), ...(S.admin?.payments || [])].find(x => x.id === d.id); if (!p) return;
+    const doc = newPdf('Payment receipt'); if (!doc) return;
+    H(doc, 'Receipt');
+    T(doc, ['Detail', 'Value'], [['Receipt number', 'PW-' + p.id.slice(0, 8).toUpperCase()], ['Date', dstr(p.createdAt)], ['Customer', `${p.name || ''} (${p.email})`], ['Plan', p.months == 12 ? 'Premium, yearly' : 'Premium, monthly'], ['Amount paid', `${p.currency} ${fmt(p.amount)}`], ['Payment method', 'Bank transfer'], ['Payment reference', p.reference], ['Status', p.status === 'confirmed' ? 'Confirmed' : p.status]]);
+    P(doc, 'Thank you. Your premium plan is active for the period purchased. Keep this receipt for your records.');
+    finishPdf(doc, 'plotwise-receipt-' + p.id.slice(0, 8)); toast('Receipt downloaded.');
+  } catch (e) { toast('Could not create the receipt: ' + (e.message || e), true); }
+};
+function paymentsPdf() {
+  const doc = newPdf('Payments report'); if (!doc) return; const P_ = S.admin.payments;
+  H(doc, 'All payments');
+  T(doc, ['Date', 'Customer', 'Plan', 'Amount', 'Reference', 'Status'], P_.map(p => [dstr(p.createdAt), `${p.name || ''} ${p.email}`, p.months == 12 ? 'Yearly' : 'Monthly', `${p.currency} ${fmt(p.amount)}`, p.reference, p.status]), null, [3]);
+  const rv = {}; P_.filter(x => x.status === 'confirmed').forEach(x => rv[x.currency] = (rv[x.currency] || 0) + num(x.amount));
+  H(doc, 'Confirmed revenue by currency'); T(doc, ['Currency', 'Total'], Object.entries(rv).map(([k, v]) => [k, fmt(v)]), null, [1]);
+  finishPdf(doc, 'plotwise-payments-report'); toast('Report downloaded.');
+}
+
+renderPricing();
+</script>
+</body>
+</html>
