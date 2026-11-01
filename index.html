@@ -206,14 +206,28 @@ import { getFirestore, doc, setDoc, addDoc, updateDoc, deleteDoc, getDocs, colle
 import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 /* ============ 1. PASTE YOUR FIREBASE WEB APP CONFIG HERE ============ */
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
-};
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+  import { getAuth } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD9IK2Pdn-dn6E_oj40hXjOxkiHJtkrZkM",
+    authDomain: "plotwise-3acf0.firebaseapp.com",
+    projectId: "plotwise-3acf0",
+    storageBucket: "plotwise-3acf0.firebasestorage.app",
+    messagingSenderId: "946241196301",
+    appId: "1:946241196301:web:9b10dfdd8a367f81aee044"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  
+  // Make auth global so your Start free button can use it
+  window.firebaseAuth = auth;
+  window.firebaseDb = db;
+</script>
 /* ==================================================================== */
 
 const app = initializeApp(firebaseConfig);
